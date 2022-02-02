@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ErrorData","A type containing information about the location of an error in text."]]});

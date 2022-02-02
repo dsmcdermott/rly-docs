@@ -1,0 +1,577 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate contains facilities for generating lexers which can parse or lex input into [`Token`]’s."><meta name="keywords" content="rust, rustlang, rust-lang, lex"><title>lex - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../lex/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate lex</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all lex's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="lex" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">lex</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/lex/lib.rs.html#7-910" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains facilities for generating <a href="https://en.wikipedia.org/wiki/Lexer">lexers</a> which can parse or lex
+input into <a href="struct.Token.html" title="Token"><code>Token</code></a>’s.</p>
+<p>Creating <a href="trait.Lexer.html">lexers</a> can be done using either the <a href="struct.LexerWriter.html" title="LexerWriter"><code>LexerWriter</code></a> struct:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">lex::LexerWriter</span>;
+
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+
+<span class="kw">let</span> <span class="ident">rules</span> <span class="op">=</span> <span class="string">r#&quot;
+id : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;
+ignore : &quot;[[:space:]]+&quot;
+int : &quot;[0-9]+&quot;
+error : &quot;/&quot;&quot;#</span>;
+
+<span class="kw">let</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">LexerWriter::from_str</span>(<span class="ident">rules</span>).<span class="ident">unwrap</span>();
+
+<span class="ident">writer</span>.<span class="ident">write</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">unwrap</span>();
+
+<span class="kw">let</span> <span class="ident">lexer_text</span> <span class="op">=</span> <span class="ident">String::from_utf8</span>(<span class="ident">buffer</span>).<span class="ident">unwrap</span>();</code></pre></div>
+<p>the <a href="fn.write_from_str.html" title="write_from_str"><code>write_from_str</code></a> or <a href="fn.write_from_reader.html" title="write_from_reader"><code>write_from_reader</code></a> functions:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+
+<span class="kw">let</span> <span class="ident">rules</span> <span class="op">=</span> <span class="string">r#&quot;
+id : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;
+ignore : &quot;[[:space:]]+&quot;
+int : &quot;[0-9]+&quot;
+error : &quot;/&quot;&quot;#</span>;
+
+<span class="ident">lex::write_from_str</span>(<span class="ident">rules</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">unwrap</span>();
+
+<span class="kw">let</span> <span class="ident">lexer_text</span> <span class="op">=</span> <span class="ident">String::from_utf8</span>(<span class="ident">buffer</span>).<span class="ident">unwrap</span>();</code></pre></div>
+<p>or using the <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a>struct or <a href="fn.build_lexer.html" title="build_lexer"><code>build_lexer</code></a> function inside a <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build
+script</a> (this is most likely what you want):</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+<span class="kw">use</span> <span class="ident">lex</span>::{<span class="ident">LexerBuilder</span>, <span class="ident">LexerBuilderError</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span> <span class="op">&lt;</span>(), <span class="ident">LexerBuilderError</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">LexerBuilder::new</span>().<span class="ident">unwrap</span>();
+	<span class="ident">builder</span>
+		.<span class="ident">with_name</span>(<span class="string">&quot;my_lexer&quot;</span>)<span class="question-mark">?</span>
+		.<span class="ident">build</span>()<span class="question-mark">?</span>;
+	<span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>All three methods ultimately use <a href="struct.LexerWriter.html" title="LexerWriter"><code>LexerWriter</code></a>, which is created using
+<a href="struct.LexerWriter.html#method.from_str"><code>from_str</code></a> to parse a source string, and which contains the
+data necessary to write a lexer module. The other two methods are essentially just
+convinience wrappers around <a href="struct.LexerWriter.html#method.from_str" title="LexerWriter::from_str"><code>LexerWriter::from_str</code></a> and <a href="struct.LexerWriter.html#method.write" title="LexerWriter::write"><code>LexerWriter::write</code></a>.</p>
+<p>When using the <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> struct, the resulting lexer can be included using the
+macro <a href="macro.lexer.html" title="lexer"><code>lexer</code></a>. For example:</p>
+<p>In <code>build.rs</code></p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+<span class="kw">use</span> <span class="ident">lex</span>::{<span class="ident">LexerBuilder</span>, <span class="ident">LexerBuilderError</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span> <span class="op">&lt;</span>(), <span class="ident">LexerBuilderError</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">LexerBuilder::new</span>().<span class="ident">unwrap</span>();
+	<span class="ident">builder</span>
+		.<span class="ident">with_name</span>(<span class="string">&quot;my_lexer&quot;</span>)<span class="question-mark">?</span>
+		.<span class="ident">build</span>()<span class="question-mark">?</span>;
+	<span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>In <code>src/lib.rs</code></p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="macro">lex::lexer!</span>(<span class="string">&quot;my_lexer&quot;</span>);
+<span class="kw">use</span> <span class="ident">lexer::LexerRules</span>;
+
+<span class="comment">//</span>
+<span class="comment">//</span>
+
+<span class="kw">let</span> <span class="ident">rules</span> <span class="op">=</span> <span class="ident">LexerRules::new</span>();
+
+<span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">rules::lex</span>(<span class="ident">src</span>);</code></pre></div>
+<h2 id="lexers" class="section-header"><a href="#lexers">Lexers</a></h2><h3 id="about" class="section-header"><a href="#about">About</a></h3>
+<p><a href="https://en.wikipedia.org/wiki/Lexer">Lexers</a> (also called “tokenizers”,) are, generally speaking, components that can
+scan a text and “tokenize” it or brake it up into “tokens”, which are the basic,
+discreet units used to analyze the text. For example, in the following line of Rust
+code:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="number">5</span> <span class="op">+</span> <span class="number">4</span>;</code></pre></div>
+<p>the tokens would be: <code>let</code>, <code>x</code>, <code>=</code>, <code>5</code>, <code>+</code>, <code>4</code>, and <code>;</code> (there are also spaces
+inbetween these tokens, but these are <a href="index.html#error-and-ignore">ignored</a> by the compiler.) These tokens are
+also categorized in a way that the compiler understand (namely <code>KW_LET</code>, <code>IDENTIFIER</code>,
+<code>Eq</code>, <code>INTEGER_LITERAL</code>, <code>Plus</code>, <code>INTEGER_LITERAL</code>, and <code>Semi</code> respectively) and may
+also carry around data about their location in the source for error
+messages.<sup id="fnref1"><a href="#fn1">1</a></sup></p>
+<p>This crate contains code for automatically generating Rust source code for lexers, as
+well as the dependencies used by them. Once generated, these lexers can be included
+and used in any package that has this crate as a dependency. This process can be
+automated using <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build scripts</a> with cargo, with the helper struct
+<a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> and macro <a href="macro.lexer.html" title="lexer!"><code>lexer!</code></a>.</p>
+<h3 id="lexer-structure" class="section-header"><a href="#lexer-structure">Lexer Structure</a></h3>
+<p>These lexers are written as module named <code>lexer</code> containing 4 public items. These are:</p>
+<ul>
+<li>An enum called <code>TokenKind</code>, whose variants are constants of the form
+<code>T_&lt;name&gt;</code><sup id="fnref2"><a href="#fn2">2</a></sup> for each <a href="index.html#rules">token rule</a> except for <a href="index.html#error-and-ignore"><code>ignore</code> and
+<code>error</code></a> (if present,) and acts as the discriminant for <a href="struct.Token.html" title="Token"><code>Token</code></a>’s returned by
+the lexer. <code>TokenKind</code> implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Debug.html"><code>Debug</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/clone/trait.Clone.html" title="Clone"><code>Clone</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a>,
+<a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.PartialEq.html" title="PartialEq"><code>PartialEq</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Eq.html" title="Eq"><code>Eq</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.PartialOrd.html" title="PartialOrd"><code>PartialOrd</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>, and <a href="https://doc.rust-lang.org/1.58.1/core/hash/trait.Hash.html"><code>Hash</code></a>. It also
+implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html"><code>Display</code></a>, with the displayed value for a variant
+being the <code>&lt;name&gt;</code> part of <code>T_&lt;name&gt;</code>.</li>
+</ul>
+<ul>
+<li>
+<p>A type alias <code>Token&lt;'a&gt;</code> which is an alias for [<code>Token&lt;'a, TokenKind&gt;</code>], the type of
+tokens parsed by the lexer. [See there] for more details.</p>
+</li>
+<li>
+<p>A struct <code>Lexer</code>, which is the type of lexers created for the modules. <code>Lexer</code>
+implements two methods described in the trait <a href="trait.Lexer.html" title="Lexer"><code>Lexer</code></a>: <a href="trait.Lexer.html#tymethod.new"><code>new</code></a>, which
+creates a new instance of a <code>Lexer</code>, containing all the rules and data necessary for
+lexing an input, and <a href="trait.IntoTokens.html#tymethod.lex"><code>lex</code></a>, which creates an instance of <code>Tokens</code>,
+which iterates over the lazily parsed <code>Token</code>’s of a given input.</p>
+</li>
+<li>
+<p>And finaly, a struct called <code>Tokens&lt;'r, 's&gt;</code>, where <code>'r</code> is the lifetime of the
+<code>Lexer</code> that spawned it (see above), and <code>'s</code> is the lifetime of its input text.
+<code>Tokens&lt;'_, 's&gt;</code> implements the [<code>Tokens&lt;'s, TokenKind&gt;</code>] trait with <code>TokenKind</code> (see
+above) being the discriminant. This means in particular that <code>Tokens</code> is an <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html" title="Iterator">Iterator</a>
+over the lazily parsed tokens of its input, with the <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html#associatedtype.Item">item</a> type being
+[<code>Result&lt;Token&lt;'_&gt;, Error&gt;</code>]; returning an <a href="https://doc.rust-lang.org/1.58.1/core/result/enum.Result.html#variant.Err" title="Err"><code>Err</code></a> when the <a href="index.html#error-and-ignore">error rule</a> is
+triggered, or when encountering an unmatchable string, and returning [<code>Ok(token)</code>]
+otherwise.</p>
+</li>
+</ul>
+<p>The public interfaces of both <code>Lexer</code> and <code>Tokens</code> are completely described by the
+corresponding traits <a href="trait.Lexer.html" title="Lexer"><code>Lexer</code></a> and <a href="trait.Tokens.html" title="Tokens"><code>Tokens</code></a>, respectively. However, both types are
+guarenteed to seperately implement all off the methods of their respective traits,
+<strong>with no difference between the two implementation</strong>. In particular the type <code>Lexer</code>
+implements <code>lex</code> as a method of type <code>&lt;'r, 's&gt;(&amp;'r self, inp: &amp;'s str) -&gt; Tokens&lt;'r, 's&gt;</code>. This means that the interfaces for these types can be used without having to
+import the associated traits. For example:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="macro">lex::lexer!</span>();
+
+<span class="kw">use</span> <span class="ident">lexer::Lexer</span>;
+
+<span class="kw">let</span> <span class="ident">first_lexer</span> <span class="op">=</span> <span class="ident">Lexer::new</span>();
+
+<span class="kw">let</span> <span class="ident">identical_lexer</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Lexer</span> <span class="kw">as</span> <span class="ident">lex::Lexer</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>();	<span class="comment">// same as &#39;first_lexer&#39;;</span></code></pre></div>
+<p>Note that the <code>#[allow(unused_code)]</code> attribute is set for the generated module, so
+compiler warnings wont be generated for not using any of the items, just like with an
+external crate. For example, in the above example the items <code>Error</code>, <code>Token</code>, and
+<code>Tokens</code> are not used, but no warning would be generated.</p>
+<h2 id="lexer-definitions" class="section-header"><a href="#lexer-definitions">Lexer Definitions</a></h2><h3 id="rules" class="section-header"><a href="#rules">Rules</a></h3>
+<p>Lexer definitions are utf-8 formatted strings (such as rust’s <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str">str</a> and <a href="https://doc.rust-lang.org/1.58.1/alloc/string/struct.String.html" title="String">String</a>) that
+define a list of rules for parsing tokens (see <a href="index.html#syntax">below</a> for the syntax.)
+Each rule defines a <em>name</em> and a <em>regex</em>, where the <em>name</em> introduces a new category
+of tokens to recognize, and <em>regex</em> is a non-empty-matching regex that describes how
+to identify the category of token. For example, the following line introduced a rule
+with name “<code>ident</code>” and with regex “<code>\[a-zA-Z\]+\[_a-zA-Z0-9\]*</code>”:</p>
+<div class="example-wrap"><pre class="language-text"><code>ident : &quot;[a-zA-Z]+[_a-zA-Z0-9]*&quot;</code></pre></div>
+<p>Again, see <a href="index.html#syntax">below</a> for details about the syntax. This means that when
+the generated lexer (or, more accurately, an instance of
+<a href="index.html#lexer-structure"><code>Tokens</code></a> spawned by an instance of the generated
+<a href="index.html#lexer-structure"><code>Lexer</code></a> type) is parsing an input string, and the regex
+“<code>\[a-bA-B\]+\[_a-bA-B0-9\]*</code>” matches the begining of the unparsed portion, the
+matching text gets parsed and returned as an “<code>ident</code>” token (see
+<a href="index.html#lexer-structure">above</a> and <a href="struct.Token.html" title="Token"><code>Token</code></a>.) The exceptions to this are rules with
+the name “<code>error</code>” or “<code>ignore</code>” (see <a href="index.html#error-and-ignore">below</a>.)</p>
+<p>If no rules can be matched to the begining of the unparsed input, then the lexer
+returns an <a href="struct.Error.html" title="Error"><code>Error</code></a>.</p>
+<p>Note that the order in which the rules are defined <em>does</em> matter: if multiple rules
+match the begining of the unparsed portion of the input, then the first defined rule
+matches. This may cause unexpected problems where an input is valid when parsed one
+way, but invalid when parsed another. For example, suppose you have a lexer with two
+rules:</p>
+<div class="example-wrap"><pre class="language-text"><code>foo : &quot;abc&quot;
+bar : &quot;abc.*def&quot;</code></pre></div>
+<p>And suppose you tried to lex the following input:</p>
+<div class="example-wrap"><pre class="language-text"><code>abc def</code></pre></div>
+<p>This whole string would match “<code>bar</code>”, but since “<code>foo</code>” is defined first it instead
+matches “<code>abc</code>” to <code>foo</code>, and then raises an error for “<code> def</code>”, since neither “<code>foo</code>”
+nor “<code>bar</code>” matches “<code> def</code>”.</p>
+<p>Rules also cannot be defined twice: that is, no two rules can have the same name.</p>
+<h3 id="error-and-ignore" class="section-header"><a href="#error-and-ignore"><code>error</code> and <code>ignore</code></a></h3>
+<p>Rules with the <a href="index.html#rules">name</a> “<code>error</code>” or “<code>ignore</code>” behave differently from
+normal rules: rather than of defining a type of token and describing how to recognize
+it, they insted trigger special behaviour by the lexer when ther
+<a href="index.html#rules">regexes</a> match.</p>
+<p>When the <code>error</code> rule is matched, instead of returning a token, the lexer returns an
+<a href="struct.Error.html" title="Error"><code>Error</code></a> with <a href="enum.ErrorKind.html">kind</a> <a href="enum.ErrorKind.html#variant.ErrorRule"><code>ErrorRule</code></a> and with the
+offending text as the <a href="struct.Error.html#method.val"><code>val</code></a>. When the <code>ignore</code> rule is matched, instead
+of returning anything, the lexer simply skips over the matched text.</p>
+<p>Note that, just as with normal rules, the order in which <code>error</code> and/or <code>ignore</code> are
+defined relatve to the other rules matters for matching. For example, suppose you have
+a lexer with the following rules:</p>
+<div class="example-wrap"><pre class="language-text"><code>foo : &quot;abc&quot;
+bar : &quot;def&quot;
+error : &quot;abc def&quot;
+ignore : &quot;[[:space:]]+&quot;</code></pre></div>
+<p>And suppose it’s trying to lex the following input:</p>
+<div class="example-wrap"><pre class="language-text"><code>abc def</code></pre></div>
+<p>This would return the tokens “<code>foo(abc)</code>” and “<code>bar(def)</code>” without error, despite the
+fact that <code>error</code> matches the whole text, because <code>foo</code> is defined before <code>error</code>; it
+would first match <code>foo</code> against “<code>abc</code>”, then <code>ignore</code> against “<code> </code>”, and then <code>bar</code>
+against “<code>def</code>”.</p>
+<h3 id="syntax" class="section-header"><a href="#syntax">Syntax</a></h3><h4 id="rule-syntax" class="section-header"><a href="#rule-syntax">Rule Syntax</a></h4>
+<p>As decribed <a href="index.html#rules">above</a>, a lexer definition is a utf-8 string defining a list
+of rules to use when lexing. Rules are seperated by newlines (‘\n’ <code>U+000A</code>) and empty
+lines are ignored. The general syntax for a rule is as follows:</p>
+<div class="example-wrap"><pre class="language-text"><code>rule ::= name | divider | regex		(no newlines)
+name ::= [[:alpha:]][_0-9[:alpha:]]*
+divider ::= [[:space:]]:[[:space:]]
+regex ::= &quot;.+&quot;</code></pre></div>
+<p>Whitespace between the components of a <code>rule</code> is generally ignored, with the exception
+of <code>divider</code>’s which, as noted above, must have at least one whitespace character
+between it and the <code>name</code> and <code>regex</code>, and with the exception that newlines (<code>U+000A</code>)
+cannot occur within a rule.</p>
+<p>A <code>rule</code> consists of a <a href="index.html#rules"><code>name</code></a>, a <code>divider</code> (‘<code>:</code>’), and a
+<a href="index.html#rules"><code>regex</code></a>. A <code>name</code> must start with an ASCII alphabetical character
+(<code>[a-zA-Z]</code>) followed by any sequence of ASCII alphabetical characters, underscores
+(‘<code>_</code>’), or digits (<code>[0-9]</code>). For example</p>
+<div class="example-wrap"><pre class="language-text"><code>Foo : &quot;\W(Foo)+\W&quot;
+
+f_0O : &quot;(?P&lt;interpunct&gt;\u00B7)(?P&lt;word&gt;\w+)&quot;
+
+trailing_whitespace : &quot;((?m)\s+$)&quot;</code></pre></div>
+<p>A <code>divider</code> is the character ‘<code>:</code>’ (<code>U+003A</code>) with at least one (non-newline)
+whitespace character between it and the <code>name</code>, and between it and the <code>regex</code></p>
+<p>A <code>regex</code> is a <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a>
+introduced by a ‘<code>&quot;</code>’ (<code>U+0022</code>) and ended by another ‘<code>&quot;</code>’. <code>&quot;</code>’s within a <code>regex</code> do
+not need to be escaped (and in fact, trying to escape them will raise an
+<a href="../regex/error/enum.Error.html">error</a> as a non-recognized escape sequence,) but no non-whitespace
+characters can occur after the final ‘<code>&quot;</code>’. For example, in the following definition:</p>
+<div class="example-wrap"><pre class="language-text"><code>quote : &quot;(&quot;\w*&quot;)|(&#39;\w*&#39;)&quot;</code></pre></div>
+<p>the rule <code>quote</code> matches any word surrounded by ‘<code>&quot;</code>’, or by ‘<code>'</code>’, with the two <code>&quot;</code>’s
+appearing between the initial ‘<code>&quot;</code>’ and the final ‘<code>&quot;</code>’ being interpreted as literal
+‘<code>&quot;</code>’’s.</p>
+<p><code>regex</code>’s are parsed according to the crate <a href="../regex/index.html"><code>regex</code></a> (with one
+exception<sup id="fnref3"><a href="#fn3">3</a></sup>,) using the same default flags, and must be valid regular
+expressions according to the <a href="../regex/index.html#syntax">rules of that crate</a>. For example, the
+rule:</p>
+<div class="example-wrap"><pre class="language-text"><code>space_no_nl : &quot;[[:space:]&amp;&amp;[^\n]]&quot;</code></pre></div>
+<p>would be valid and would match any sing ASCII whitespace character except for ‘<code>\n</code>’,
+while the rule:</p>
+<div class="example-wrap"><pre class="language-text compile_fail"><code>start_with_a_invalid : &quot;a(*)&quot;</code></pre></div>
+<p>would be invalid since the repition operator <code>*</code> is unescaped and lacks an expression
+to operate on.</p>
+<p>See the <a href="../regex/index.html#syntax">documentation on the crate <code>regex</code></a> for more info.</p>
+<h5 id="escapes" class="section-header"><a href="#escapes">Escapes</a></h5>
+<p>Note that, because the utf-8 text is used directly to create a
+<a href="regex/struct.Regex.html"><code>Regex</code></a>, when writing a <code>.lex</code> source file with a text editor the
+result is equivalent to calling <a href="regex/struct.Regex.html#method.new" title="Regex::new"><code>Regex::new</code></a> on the <code>regex</code> interpreted as a rust
+<a href="https://doc.rust-lang.org/reference/tokens.html#raw-string-literals">raw string
+literal</a> (with an
+<code>r</code> before the string, followed by as many <code>#</code>’ as necessary.) For example, the rule:</p>
+<div class="example-wrap"><pre class="language-text"><code>name : &quot;\w+&quot;</code></pre></div>
+<p>matches any non-empty sequence of unicode word characters, but if you were to try the
+following in rust:</p>
+
+<div class='information'><div class='tooltip compile_fail'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered compile_fail"><code><span class="kw">use</span> <span class="ident">regex::Regex</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+	<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">&quot;\w+&quot;</span>).<span class="ident">unwrap</span>();
+}</code></pre></div>
+<p>you would get the following error:</p>
+<div class="example-wrap"><pre class="language-text"><code>error: unknown character escape: `w`
+ --&gt; src/main.rs:4:26
+  |
+4 |     let name = Regex::new(&quot;\w+&quot;).unwrap();
+  |                             ^ unknown character escape
+  |
+  = help: for more information, visit &lt;https://static.rust-lang.org/doc/master/reference.html#literals&gt;</code></pre></div>
+<p>because the sequence “<code>\w</code>” would be parsed as an escape sequence at the level of the
+rust source code, which would trigger an error since “<code>\w</code>” is not a valid <a href="https://doc.rust-lang.org/reference/tokens.html#character-escapes">escape
+sequence</a> in rust.
+However, if we were to instead use one of the following examples:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">regex::Regex</span>;
+
+<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">r&quot;\w+&quot;</span>).<span class="ident">unwrap</span>();
+
+<span class="kw">let</span> <span class="ident">equivalent_name</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">&quot;\\w+&quot;</span>).<span class="ident">unwrap</span>();
+
+<span class="macro">assert_eq!</span>(<span class="ident">name</span>.<span class="ident">as_str</span>(), <span class="ident">equivalent_name</span>.<span class="ident">as_str</span>());</code></pre></div>
+<p>it would work fine, since, with either option, a string consisting of the characters
+‘<code>\</code>’, ‘<code>w</code>’, and ‘<code>+</code>’ would be sent to <a href="regex/struct.Regex.html#method.new"><code>Regex::new</code></a>, and so
+the sequence “<code>\w</code>” would get processed on the level of the regex (specifically <a href="../regex/index.html#perl-character-classes-unicode-friendly">as a
+character class matching unicode word
+characters</a>.) However, if were to use
+the second option, “<code>\\w+</code>”, for our rule instead:</p>
+<div class="example-wrap"><pre class="language-text"><code>incorect_word : &quot;\\w+&quot;</code></pre></div>
+<p>This would be the equivalent of:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">regex::Regex</span>;
+<span class="ident">Regex::new</span>(<span class="string">r&quot;\\w+&quot;</span>).<span class="ident">unwrap</span>();</code></pre></div>
+<p>which would match a literal ‘<code>\</code>’, followed by a non-empty sequence of <code>w</code>’s!</p>
+<h4 id="coments" class="section-header"><a href="#coments">Coments</a></h4>
+<p>Comments can also be used with lexer definitions: A line that has <code>#</code> (<code>U+0023</code>) as
+its first non-space character is interpreted as a comment and is ignored. For example:</p>
+<div class="example-wrap"><pre class="language-text"><code># this is a lexer definition file
+
+# this rule is for identifiers
+id : &quot;[[:alpha:]][_0-9[:alpha:]]*&quot;
+
+# this is for integer literals
+int : &quot;[0-9]+&quot;
+
+# multiplication and addition
+mult : &quot;\*&quot;
+plus : &quot;\+&quot;
+
+# this line is a comment explaning that the following line is a rule for identifying comments
+comment : &quot;[[:space:]]*#.*$&quot;</code></pre></div><h2 id="example" class="section-header"><a href="#example">Example</a></h2>
+<p>Suppose you want to build a simple calculator that can handle addition and subtraction
+on integers, as well as understand decimal, hexadecimal, octal, and binary integers in
+the same format as <a href="https://doc.rust-lang.org/reference/tokens.html#number-literals">rust integer literals</a> (without underscores, for simplicity.)
+We would start by making a new project “<code>calculator</code>” with <code>cargo new</code>, which would
+give us something like the following directory structure:</p>
+<div class="example-wrap"><pre class="language-text"><code>calculator/
+├── Cargo.toml
+└── src/
+    └── main.rs</code></pre></div>
+<p>Next, edit <code>Cargo.toml</code> to add this crate as a dependency <em>and</em> a build dependency. It
+should look something like this:</p>
+<div class="example-wrap"><pre class="language-text"><code>[package]
+name = &quot;calculator&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[dependencies]
+lex = &quot;0.1.0&quot;
+
+[build-dependencies]
+lex = &quot;0.1.0&quot;</code></pre></div>
+<p>(<a href="index.html"><code>lex</code></a> needs to be added as a build dependency so that we can use it in
+<code>build.rs</code>.)</p>
+<p>Then, make a file called “<a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html"><code>build.rs</code></a>” in the package root directory with the
+following contents:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// build.rs</span>
+
+<span class="kw">use</span> <span class="ident">lex</span>::{<span class="ident">LexerBuilder</span>, <span class="ident">LexerBuilderError</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LexerBuilderError</span><span class="op">&gt;</span> {
+	<span class="ident">LexerBuilder::new</span>()
+		.<span class="ident">unwrap</span>()
+		.<span class="ident">build</span>()<span class="question-mark">?</span>
+		.<span class="ident">set_rerun</span>()
+		.<span class="ident">unwrap</span>();
+	<span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>What this does is create a new <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a>, call <a href="struct.LexerBuilder.html#method.build"><code>build</code></a>
+to build a lexer, and then call <a href="struct.LexerBuilder.html#method.set_rerun"><code>set_rerun</code></a> to set cargo to
+watch our lexer source file for changes and rerun the build script when it detects
+one.</p>
+<p>Now, if you were to try to build the package as-is, with <code>cargo build</code>, you would
+encounter the following error:</p>
+<div class="example-wrap"><pre class="language-text"><code>   Compiling calculator v0.1.0 (/path/to/project/calculator)
+error: failed to run custom build command for `calculator v0.1.0 (/path/to/project/calculator)`
+
+Caused by:
+  process didn&#39;t exit successfully: `/path/to/project/calculator/target/debug/build/calculator-&lt;hash&gt;/build-script-build` (exit status: 1)
+  --- stderr
+  Error: IO(Os { code: 2, kind: NotFound, message: &quot;No such file or directory&quot; })</code></pre></div>
+<p>This is because <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> cannot find our lexer source file (because we haven’t
+written any yet.) As explained at <a href="struct.LexerBuilder.html#name-and-location"><code>LexerBuilder</code></a>,
+the <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a>, by default, looks for a source file with the name of the current
+project plus “<code>_lex.lex</code>”.</p>
+<p>So, our next step is to make this file. Remember, we want to be able to recognize
+addition and subtraction (as well as negation,) and be able to recognize numbers
+written in base 2, 8, 10, and 16 using <a href="https://doc.rust-lang.org/reference/tokens.html#number-literals">the same format as rust</a>. Let’s also say
+that whitespace is ignored.</p>
+<p>(Before reading further, it might be worthwhile to try and come up with a <code>.lex</code> file
+yourself as an exercise. Using <a href="index.html#syntax">the ‘syntax’ section of this
+documentation</a> and <a href="https://doc.rust-lang.org/reference/tokens.html#number-literals">the rust integer literal rules</a> (remember, we’re
+ignoring underscores ‘<code>_</code>’ between digits for simplicity’s sake) as guides, try and
+make a valid <code>.lex</code> file that achieves what we want, and compare your answer to the
+sample given below.)</p>
+<p>We would therefore make a file called <code>calculator_lex.lex</code> as follows<sup id="fnref4"><a href="#fn4">4</a></sup>:</p>
+<div class="example-wrap"><pre class="language-text"><code># calculator_lex.lex
+
+BIN : &quot;0b[01]+&quot;
+OCT : &quot;0o[0-7]+&quot;
+HEX : &quot;0x[0-9a-fA-F]+&quot;
+DEC : &quot;[0-9]+&quot;
+PLUS : &quot;\+&quot;
+MINUS : &quot;-&quot;
+ignore : &quot;\s+&quot;</code></pre></div>
+<p>Your directory structure should look something like this (minus any <code>Cargo.lock</code> or
+<code>target/</code> files:)</p>
+<div class="example-wrap"><pre class="language-text"><code>calculator/
+├── build.rs
+├── calculator_lex.lex
+├── Cargo.toml
+└── src/
+    └── main.rs</code></pre></div>
+<p>The next step, after having made a build script to automatically generate our lexer,
+is to include that lexer in our source code. <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> writes the
+<a href="index.html#lexer-structure">module</a> it generates to the directory set by cargo in the
+<a href="https://doc.rust-lang.org/stable/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts"><code>OUT_DIR</code></a> environment variable, and it by default writes it as a file with the
+name of the package plus “<code>_lex.rs</code>”. Therefore, if wanted to include the lexer in our
+code, we could do something like this:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="macro">include!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/calculator_lex.rs&quot;</span>));</code></pre></div>
+<p>However, this crate already contains a helper macro <a href="macro.lexer.html" title="lexer!"><code>lexer!</code></a> which we can use
+instead:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="comment">// src/main.rs</span>
+
+<span class="macro">lex::lexer!</span>();</code></pre></div>
+<p>Either way, this includes a <a href="index.html#lexer-structure">module</a> called “<code>lexer</code>”, generated
+by <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> which contains the type <code>Lexer</code> whose instances can lex inputs by
+spawning <code>Tokens</code>’, which iterate over the lazily parsed tokens of a given input (see
+<a href="index.html#lexer-structure">above</a> for more details.)</p>
+<p>Now that we have our lexer, we can use it to write our calculator. Write the following
+for <code>src/main.rs</code>:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="comment">// src/main.rs</span>
+
+<span class="kw">use</span> <span class="ident">std::io</span>;
+
+<span class="macro">lex::lexer!</span>();
+
+<span class="kw">use</span> <span class="ident">lexer</span>::{<span class="ident">Lexer</span>, <span class="ident">Token</span>, <span class="ident">TokenKind</span>, <span class="ident">Tokens</span>};
+
+<span class="comment">// Our error type.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">enum</span> <span class="ident">Error</span> {
+    <span class="ident">MissingOperand</span>,
+    <span class="ident">UnexpectedInt</span>,
+    <span class="ident">LexerError</span>(<span class="ident">lex::Error</span>),
+}
+
+<span class="kw">use</span> <span class="ident">Error</span>::<span class="kw-2">*</span>;
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">lex::Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">lex::Error</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident">LexerError</span>(<span class="ident">err</span>)
+    }
+}
+
+<span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">String::new</span>();
+    <span class="kw">let</span> <span class="ident">stdin</span> <span class="op">=</span> <span class="ident">io::stdin</span>();
+    <span class="kw">loop</span> {
+        <span class="ident">buffer</span>.<span class="ident">clear</span>();
+        <span class="ident">stdin</span>.<span class="ident">read_line</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">expect</span>(<span class="string">&quot;unable to read input&quot;</span>);
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>).<span class="ident">expect</span>(<span class="string">&quot;unable to parse input&quot;</span>));
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">parse_dec</span>(<span class="ident">tok</span>: <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">i32</span> {
+    <span class="ident">tok</span>.<span class="ident">val</span>().<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>()
+}
+
+<span class="kw">fn</span> <span class="ident">parse_bin</span>(<span class="ident">tok</span>: <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">i32</span> {
+    <span class="ident">i32::from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">tok</span>.<span class="ident">val</span>()[<span class="number">2</span>..], <span class="number">2</span>).<span class="ident">unwrap</span>()
+}
+
+<span class="kw">fn</span> <span class="ident">parse_oct</span>(<span class="ident">tok</span>: <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">i32</span> {
+    <span class="ident">i32::from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">tok</span>.<span class="ident">val</span>()[<span class="number">2</span>..], <span class="number">8</span>).<span class="ident">unwrap</span>()
+}
+
+<span class="kw">fn</span> <span class="ident">parse_hex</span>(<span class="ident">tok</span>: <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">i32</span> {
+    <span class="ident">i32::from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">tok</span>.<span class="ident">val</span>()[<span class="number">2</span>..], <span class="number">16</span>).<span class="ident">unwrap</span>()
+}
+
+<span class="comment">// Parses an integer when expecting one as an operand to &quot;op&quot;. Like parse_integer except</span>
+<span class="comment">// returns an err if no tokens remain in &#39;tokens&#39;.</span>
+<span class="kw">fn</span> <span class="ident">parse_operand</span>(<span class="ident">tokens</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Tokens</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="ident">parse_integer</span>(<span class="ident">tokens</span>)<span class="question-mark">?</span>.<span class="ident">ok_or</span>(<span class="ident">MissingOperand</span>)
+}
+
+<span class="comment">// Attempts to parse an integer from &#39;tokens&#39;, returnin Ok(None) if no tokens remain.</span>
+<span class="kw">fn</span> <span class="ident">parse_integer</span>(<span class="ident">tokens</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Tokens</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">tok</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tokens</span>.<span class="ident">next</span>() {
+        <span class="prelude-val">Some</span>(<span class="ident">result</span>) =&gt; <span class="ident">result</span><span class="question-mark">?</span>,
+        <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+    };
+    <span class="comment">// Match the token kind to determine how to proceed.</span>
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="ident">tok</span>.<span class="ident">kind</span>() {
+        <span class="ident">TokenKind::T_DEC</span> =&gt; <span class="ident">parse_dec</span>(<span class="ident">tok</span>),
+        <span class="ident">TokenKind::T_BIN</span> =&gt; <span class="ident">parse_bin</span>(<span class="ident">tok</span>),
+        <span class="ident">TokenKind::T_OCT</span> =&gt; <span class="ident">parse_oct</span>(<span class="ident">tok</span>),
+        <span class="ident">TokenKind::T_HEX</span> =&gt; <span class="ident">parse_hex</span>(<span class="ident">tok</span>),
+        <span class="comment">// If the current token is a unary &quot;+&quot; operator, just return the next parsed</span>
+        <span class="comment">// integer. (&quot;+3&quot; is the same as &quot;3&quot;)</span>
+        <span class="ident">TokenKind::T_PLUS</span> =&gt; <span class="ident">parse_operand</span>(<span class="ident">tokens</span>)<span class="question-mark">?</span>,
+        <span class="comment">// If the current token is a unary &quot;-&quot; operator, return the negative version of</span>
+        <span class="comment">// the next integer.</span>
+        <span class="ident">TokenKind::T_MINUS</span> =&gt; <span class="op">-</span><span class="ident">parse_operand</span>(<span class="ident">tokens</span>)<span class="question-mark">?</span>,
+    }))
+}
+
+<span class="comment">// Parse a string by calculating its value.</span>
+<span class="kw">fn</span> <span class="ident">parse</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">inp</span>: <span class="ident">S</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="comment">// our lexer</span>
+    <span class="kw">let</span> <span class="ident">lexer</span> <span class="op">=</span> <span class="ident">Lexer::new</span>();
+    <span class="comment">// our &#39;Tokens&#39; instance. Iterates over the lazily parsed tokens of &#39;inp&#39;</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lexer</span>.<span class="ident">lex</span>(<span class="ident">inp</span>.<span class="ident">as_ref</span>());
+    <span class="comment">// our accumulator, initialized to the first integer</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parse_integer</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tokens</span>)<span class="question-mark">?</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">n</span>) =&gt; <span class="ident">n</span>,
+        <span class="comment">// if the input is empty return the additive identity</span>
+        <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>),
+    };
+    <span class="comment">// add or subtract from the accumulator for the remaining values</span>
+    <span class="kw">loop</span> {
+        <span class="comment">// break if no more tokens remaining</span>
+        <span class="kw">let</span> <span class="ident">tok</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tokens</span>.<span class="ident">next</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">res</span>) =&gt; <span class="ident">res</span><span class="question-mark">?</span>,
+            <span class="prelude-val">None</span> =&gt; <span class="kw">break</span>,
+        };
+        <span class="comment">// if the current token is &quot;+&quot;, add the next integer, if it&#39;s &quot;-&quot; subtract the</span>
+        <span class="comment">// next one instead, if it&#39;s and intiger return an error</span>
+        <span class="kw">match</span> <span class="ident">tok</span>.<span class="ident">kind</span>() {
+            <span class="ident">TokenKind::T_PLUS</span> =&gt; <span class="ident">acc</span> <span class="op">+</span><span class="op">=</span> <span class="ident">parse_operand</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tokens</span>)<span class="question-mark">?</span>,
+            <span class="ident">TokenKind::T_MINUS</span> =&gt; <span class="ident">acc</span> <span class="op">-</span><span class="op">=</span> <span class="ident">parse_operand</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tokens</span>)<span class="question-mark">?</span>,
+            <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">UnexpectedInt</span>),
+        };
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">acc</span>)
+}</code></pre></div>
+<p>Then test it out by using <code>cargo run</code>.</p>
+<div class="footnotes"><hr><ol><li id="fn1"><p>See the
+<a href="https://doc.rust-lang.org/stable/reference/lexical-structure.html">reference</a> for
+more details on how Rust in particular handles tokens.&nbsp;<a href="#fnref1">↩</a></p></li><li id="fn2"><p>Yes, I know that this is not standard naming for <code>enum</code> variants, and
+yes, the <code>#[allow(nonstandard_style)]</code> flag is set for the whole module (and not just
+because of the <code>TokenKind</code> variants), so you don’t have to worry about compiler
+warnings when including it in your code.&nbsp;<a href="#fnref2">↩</a></p></li><li id="fn3"><p>The one exception is that an anchor ‘<code>^</code>’ always matches the begining of
+the unparsed input (as well as the beginings of lines if <a href="#grouping-and-flags">the <code>m</code> flag is
+set</a>.) For example the regex “<code>^abc</code>” would behave almost exactly
+like the regex “<code>abc</code>”, the one exception to <em>that</em> being error messages, where, upon
+encountering a section of text that cannot be matched, the lexer will search ahead to
+find the nearest matching text in order to define the range of text that cannot be
+matched. When this happens, anchors in regexes currently still match against the
+begining the remaining text, including the unmachable portion. So, for example, if you
+were to have two lexers, each with a single rule, with regexes “<code>^abc</code>” and “<code>abc</code>”
+respectively, both would behave the same on the input “<code>abcabc</code>”, returning two tokens
+with the content “<code>abc</code>”. But, on the string “<code>abcdefabc</code>”, while both lexers would
+retrun a token with “<code>abc</code>”, and both lexers would then return an error, in that error
+the second lexer would report the string “<code>def</code>” (up to the begining of “<code>abc</code>” in
+“<code>defabc</code>”) as being unparsable, while the first would report the string “<code>defabc</code>” as
+being unparsable (since “<code>^abc</code>” doesn’t match anywhere in “<code>defabc</code>”,) returning a
+less precise error message. This might be fixed later.&nbsp;<a href="#fnref3">↩</a></p></li><li id="fn4"><p>Note that because of the <a href="self#rules">precedence rules</a> the order in
+which <code>DEC</code> is placed relative to <code>BIN</code>, <code>OCT</code>, and <code>HEX</code> does matter! For example, if
+<code>DEC</code> were placed higher than <code>HEX</code>, then when trying to lex “<code>0xA</code>” it would first
+return “<code>0</code>” as a <code>DEC</code>, and then return an <a href="struct.Error.html" title="Error"><code>Error</code></a> for “<code>xA</code>”, instead of just
+parsing the whole thing as a <code>HEX</code>, which is clearly not what we want.&nbsp;<a href="#fnref4">↩</a></p></li></ol></div></div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="regex/index.html" title="lex::regex mod">regex</a></div><div class="item-right docblock-short"><p>Re-exports from the <a href="../regex/index.html" title="regex"><code>regex</code></a> crate used by the generated lexers. See the documentation there for more info.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="rly_common/index.html" title="lex::rly_common mod">rly_common</a></div><div class="item-right docblock-short"><p>Re-exports from the <a href="../rly_common/index.html" title="rly_common"><code>rly_common</code></a> crate used by the generated lexers. See the documentation there for more info.</p>
+</div></div></div><h2 id="macros" class="small-section-header"><a href="#macros">Macros</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.lexer.html" title="lex::lexer macro">lexer</a></div><div class="item-right docblock-short"><p>A macro for including a <a href="index.html">lexer</a> created with a <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a>. If no name is
+provided it defaults to the same default <a href="struct.LexerBuilder.html#name-and-location"><code>name</code></a> for
+<a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a>’s as described <a href="struct.LexerBuilder.html#name-and-location">there</a>.</p>
+</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Error.html" title="lex::Error struct">Error</a></div><div class="item-right docblock-short"><p>An error type used by <a href="trait.Lexer.html"><code>Lexer</code></a>’s.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.FmtError.html" title="lex::FmtError struct">FmtError</a></div><div class="item-right docblock-short"><p>A type for syntax errors in Lexer definitions.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.LexerBuilder.html" title="lex::LexerBuilder struct">LexerBuilder</a></div><div class="item-right docblock-short"><p>A helper struct for creating lexers in build scripts.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.LexerError.html" title="lex::LexerError struct">LexerError</a></div><div class="item-right docblock-short"><p>A type for errors encountered when creating lexers.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.LexerWriter.html" title="lex::LexerWriter struct">LexerWriter</a></div><div class="item-right docblock-short"><p>A struct that contains a specification of lexing rules and can write out a lexer module.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Token.html" title="lex::Token struct">Token</a></div><div class="item-right docblock-short"><p>The type of tokens returned by <a href="trait.Lexer.html"><code>Lexer</code></a>’s.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.ErrorKind.html" title="lex::ErrorKind enum">ErrorKind</a></div><div class="item-right docblock-short"><p>An enum representing the cause of an <a href="struct.Error.html" title="Error"><code>Error</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.LexerBuilderError.html" title="lex::LexerBuilderError enum">LexerBuilderError</a></div><div class="item-right docblock-short"><p>An umbrella type for errors encountered when generating and writing <a href="index.html#lexer-structure">lexer
+modules</a></p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.LexerErrorKind.html" title="lex::LexerErrorKind enum">LexerErrorKind</a></div><div class="item-right docblock-short"><p>The different kinds of <a href="struct.LexerError.html" title="LexerError"><code>LexerError</code></a>’s.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.IntoTokens.html" title="lex::IntoTokens trait">IntoTokens</a></div><div class="item-right docblock-short"><p>A sister trait to <a href="trait.Lexer.html" title="Lexer"><code>Lexer</code></a> representing a type that can take an input <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> and
+return a <a href="trait.Tokens.html" title="Tokens"><code>Tokens</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Lexer.html" title="lex::Lexer trait">Lexer</a></div><div class="item-right docblock-short"><p>A trait representing a <a href="index.html#lexers">lexer</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Tokens.html" title="lex::Tokens trait">Tokens</a></div><div class="item-right docblock-short"><p>An iterator of tokens (lazily) parsed by and underlying <a href="trait.Lexer.html" title="Lexer"><code>Lexer</code></a>.</p>
+</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.build_lexer.html" title="lex::build_lexer fn">build_lexer</a></div><div class="item-right docblock-short"><p>Creates a <a href="struct.LexerBuilder.html" title="LexerBuilder"><code>LexerBuilder</code></a> and builds a lexer with the default values, returning any
+errors that occur.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.write_from_reader.html" title="lex::write_from_reader fn">write_from_reader</a></div><div class="item-right docblock-short"><p>Like <a href="fn.write_from_str.html" title="write_from_str"><code>write_from_str</code></a> but reads the text from the specified input <code>fin</code>. See the
+<a href="fn.write_from_str.html">documentation for <code>write_from_str</code></a> for more details.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.write_from_str.html" title="lex::write_from_str fn">write_from_str</a></div><div class="item-right docblock-short"><p>Parses the string <code>text</code> for a <a href="struct.LexerWriter.html" title="LexerWriter"><code>LexerWriter</code></a> and then writes the
+<a href="index.html#lexer-structure"><code>Lexer</code></a> to the output <code>fout</code>. See <a href="struct.LexerWriter.html#method.write" title="LexerWriter::write"><code>LexerWriter::write</code></a> and
+<a href="struct.LexerWriter.html#method.from_str" title="LexerWriter::from_str"><code>LexerWriter::from_str</code></a> for more detailes</p>
+</div></div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="lex" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
+</body></html>

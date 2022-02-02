@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Error","An error type used by `Lexer`’s."],["Token","The type of tokens returned by `Lexer`’s."]],"trait":[["Tokens","An iterator of tokens (lazily) parsed by and underlying [`Lexer`]."]]});

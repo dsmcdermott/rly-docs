@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ErrorData","A type containing information about the location of an error in text."],["LineOffset","A struct that `Display`s its [`line`][LineOffset::line] with a caret `^` underneath the collumn [`colno`][LineOffset::colno]."]]});

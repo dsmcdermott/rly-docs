@@ -1,0 +1,586 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate contains items for generating LR(1) parsers which can recognise and parse languages into concrete syntax trees (also called “parse trees”), which can then be transformed into abstract syntax trees for processing, such as with a compiler or interpreter."><meta name="keywords" content="rust, rustlang, rust-lang, parse"><title>parse - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../parse/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate parse</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all parse's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="parse" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">parse</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/parse/lib.rs.html#7-824" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains items for generating <a href="https://en.wikipedia.org/wiki/LR_parser">LR(1) parsers</a> which can recognise and
+parse languages into <a href="https://en.wikipedia.org/wiki/Parse_tree">concrete syntax trees</a> (also called “parse trees”), which
+can then be transformed into <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax trees</a> for processing, such as with
+a compiler or interpreter.</p>
+<p>This is done by parsing a source <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> containing a specification of a grammar and
+and then generating a table of states for an LR(1) parser (as a finite state
+automaton) for that grammar. That table is then used to write out a module, in rust
+source code, for a parser struct capable of parsing the desired language.</p>
+<h2 id="generating-parsers" class="section-header"><a href="#generating-parsers">Generating Parsers</a></h2><h3 id="how-parsers-are-created" class="section-header"><a href="#how-parsers-are-created">How Parsers are Created</a></h3>
+<p>If you just want to use a parser in your project, and don’t care about the internals
+of how it’s generated, you can probably skip this section and just read the section on
+<a href="index.html#build-scripts">build scripts</a>.</p>
+<p>The general process for creating parsers starts with a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> containing a list of
+grammar rules and parsing it into a <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> struct, which contains the abstract
+representation of those rules as well other data needed to understand them.</p>
+<p>A <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> struct is then used to create a <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> which contains a
+specification of a parser in the form of a set of states for a finite state automaton.
+A <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> can then be used to write out a module, in rust source code,
+containing a type which can be used to parse the language in question.</p>
+<p>The process for generating a <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> from a <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> is somewhat involved, and
+I won’t go over it here except to say that, for the most part, it follows the standard
+process for generating LR(1) states, which you can read more about <a href="https://en.wikipedia.org/wiki/Canonical_LR_parser#Constructing_LR(1)_parsing_tables">here</a> and
+<a href="http://david.tribble.com/text/lrk_parsing.html">here</a>. It deviates slightly from this process in using a “merge as you go”
+strategy, where the program attempts to merge equivalent item sets as soon as
+possible, based on the algorithm outlined <a href="http://david.tribble.com/text/honalee.html">here</a> with minor changes.</p>
+<p>The traditional implementation of an LR(K) parser involves modelling a finite state
+automaton using a stack to store the states of the machine and the parsed fragments of
+the source text, a data table describing the states of the machine, and an
+interpretation loop which consults the table and the current input to decide what
+action to take.</p>
+<p>This crate, however, implements parsers using a <a href="https://en.wikipedia.org/wiki/Recursive_ascent_parser">“recursive ascent”</a> strategy,
+where the states are implemented as actual functions, and the call stack itself is
+used as the stack of states and parsed fragments.</p>
+<p>The benefit of this is an improvement in performance similar to that going from
+interpreted to compiled languages: By implementing the states as actual functions
+which get compiled to machine code it eliminates the overhead of having an interpreter
+loop and a seperate stack from the built-in call stack.<sup id="fnref1"><a href="#fn1">1</a></sup></p>
+<p>The downside to this is that it’s more complicated to implement: More rust code has to
+be generated and included for a parser, which makes it more difficult to document and
+abstract over different parsers. This is somewhat mitigated by the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>,
+which provides a common abstraction over the interfaces of the generated types.</p>
+<h3 id="discriminants" class="section-header"><a href="#discriminants">Discriminants</a></h3>
+<p>A note on discriminants: a “discriminant” type is the type used for the internal
+representations of symbols by a <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> and <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> when generating a parser.
+Generally speaking, there are two different discriminant types to specify when
+building a parser: the discriminant for non-terminal symbols (that is, the symbols
+that can appear on the left-hand side a <a href="https://en.wikipedia.org/wiki/Production_(computer_science)">production rule</a>) and the discriminant
+for terminal symbols. A discriminant type must implement <a href="trait.Prim.html" title="Prim"><code>Prim</code></a>, <a href="trait.FromUsize.html" title="FromUsize"><code>FromUsize</code></a>, and
+<a href="trait.IntoUsize.html" title="IntoUsize"><code>IntoUsize</code></a>, and should be capable of avoiding collisions for the number of symbols
+that it’s required to differentiate.</p>
+<p>If you’re unsure what to use for a discriminant, <a href="https://doc.rust-lang.org/1.58.1/std/primitive.u32.html" title="u32"><code>u32</code></a> is a good default, and is
+also used by the <a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a> macro as the default type for both terminal and
+non-terminal symbols.</p>
+<h3 id="build-scripts" class="section-header"><a href="#build-scripts">Build Scripts</a></h3>
+<p>The process of generating a parser for a crate can be automated using cargo’s build-in
+<a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build script functionality</a>. This crate provides the <a href="struct.ParserBuilder.html" title="ParserBuilder"><code>ParserBuilder</code></a> struct and
+<a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a> macro to simplify this process. For example:</p>
+<p>With <a href="struct.ParserBuilder.html" title="ParserBuilder"><code>ParserBuilder</code></a>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+
+<span class="kw">use</span> <span class="ident">parse</span>::{<span class="ident">ParserError</span>, <span class="ident">ParserBuilder</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ParserError</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">ParserBuilder::new</span>().<span class="ident">unwrap</span>();
+
+	<span class="ident">builder</span>
+		.<span class="ident">with_name</span>(<span class="string">&quot;my_parser&quot;</span>)<span class="question-mark">?</span>
+		.<span class="ident">at_location</span>(<span class="string">&quot;parser.y&quot;</span>)<span class="question-mark">?</span>
+		.<span class="ident">build</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">u32</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+		.<span class="ident">set_rerun</span>().<span class="ident">unwrap</span>();
+
+	<span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>With <a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+
+<span class="kw">use</span> <span class="ident">parse::ParserError</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ParserError</span><span class="op">&gt;</span> {
+	<span class="macro">parse::build_parser!</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;my_parser&quot;</span>, <span class="ident">location</span> <span class="op">=</span> <span class="string">&quot;parser.y&quot;</span>)<span class="question-mark">?</span>;
+
+	<span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>Either way, this generates a <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> and uses it to write a parser to the
+current builds <a href="https://doc.rust-lang.org/stable/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts"><code>OUT_DIR</code></a>, and from there it can be included in your code. This
+crate also contains a convenience macro called <a href="macro.parser.html" title="parser!"><code>parser!</code></a> to help with this:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="comment">// in src/main.rs</span>
+
+<span class="macro">parse::parser!</span>(<span class="string">&quot;my_parser&quot;</span>);
+
+<span class="kw">use</span> <span class="ident">parser::Parser</span>;</code></pre></div>
+<h2 id="parser-grammars" class="section-header"><a href="#parser-grammars">Parser Grammars</a></h2><h3 id="format" class="section-header"><a href="#format">Format</a></h3>
+<p>A grammar for a parser consists of a list of (non-empty) <a href="https://en.wikipedia.org/wiki/Production_(computer_science)">production rules</a> for a
+<a href="https://en.wikipedia.org/wiki/Context-free_grammar">context-free grammar</a>, represented by a utf-8 encoded string. A production rule
+takes the form:</p>
+<div class="example-wrap"><pre class="language-text"><code>	Rule ::= Symbol &#39;-&gt;&#39; Symbol+ &#39;;&#39;</code></pre></div>
+<p>Where there is a single non-terminal symbol on the left-hand side, followed by <code>-&gt;</code>
+(<code>U+002D</code> followed by <code>U+003E</code>) and a non-empty sequence of symbols, seperated by
+whitespace, on the right-hand side, with a semi-colon <code>;</code> (<code>U+003B</code>) terminating the
+rule. Whitespace is ignored except to seperate symbols.</p>
+<p>Some examples:</p>
+<div class="example-wrap"><pre class="language-text"><code>Expr -&gt; Expr sum Fact;
+
+Fact -&gt;
+	Fact
+	mult
+	Term
+;
+
+Fact-&gt;Term;</code></pre></div>
+<p>A symbol can be describied by the following regex:</p>
+<div class="example-wrap"><pre class="language-text"><code>	[[:alpha:]]([0-9_[:alpha:]])*</code></pre></div>
+<p>Which matches at least one ASCII alphabetical character, followed by any combination
+of digits <code>0</code> through <code>9</code>, underscores <code>_</code>, or ASCII alphabetical characters.</p>
+<h4 id="start-and-eof" class="section-header"><a href="#start-and-eof">“start” and “eof”</a></h4>
+<p>The symbols <code>start</code> and <code>eof</code> are special: <code>eof</code> is reserved and cannot be used as a
+symbol, and the symbol <code>start</code> must occur exactly once, on the left-hand side of a
+production rule.</p>
+<h3 id="semantics" class="section-header"><a href="#semantics">Semantics</a></h3>
+<p>The grammar rules define the structure of the syntax trees used by the parser and how
+the parser attempts to parse the input.</p>
+<p>The grammar, or production rules can be seen as a kind of <a href="https://en.wikipedia.org/wiki/Recursive_ascent_parser">rewrite rule</a>, where
+the symbol on the left-hand side can be replaced with the sequence of symbols on the
+right-hand side.</p>
+<p>Given an input sequence of terminal symbols (paired with their original values,) the
+parser attempts to generate a <em>derivation history</em> for the sequence which describes
+how to generate that sequence by starting with the <a href="index.html#start-and-eof"><code>start</code></a>
+symbol, and recurively applying production rules untill the appropriate sequence of
+non-terminals is produced.</p>
+<p>The parser does this by essentially working backwards from the terminals, recursively
+using the production rule to reduce sequences of symbols into non-terminal symbols. As
+it does this, it builds trees out of the reduced symbols, label each non-leaf node by
+the left-hand side of the production rule that was used to make it.</p>
+<h4 id="grammar-example" class="section-header"><a href="#grammar-example">Grammar Example</a></h4>
+<p>Suppose you have the following grammar:</p>
+<div class="example-wrap"><pre class="language-text"><code>start -&gt; Sum;
+Sum -&gt; Fact;
+Sum -&gt; Sum plus Fact;
+Fact -&gt; int;
+Fact -&gt; Fact mult int;</code></pre></div>
+<p>With non-terminals <code>start</code>, <code>Sum</code>, and <code>Fact</code>, and terminals <code>plus</code> <code>mult</code> and <code>int</code>.</p>
+<p>And suppose you have the following input:</p>
+<div class="example-wrap"><pre class="language-text"><code>5 + 4 * 3 + 2</code></pre></div>
+<p>This would first be lexed by a <a href="../lex/lexers/trait.Lexer.html">lexer</a>, producing the following sequence
+of tokens:</p>
+<div class="example-wrap"><pre class="language-text"><code>int(&quot;5&quot;) plus(&quot;+&quot;) int(&quot;4&quot;) mult(&quot;*&quot;) int(&quot;3&quot;) plus(&quot;+&quot;) int(&quot;2&quot;)</code></pre></div>
+<p>The parser would parse this sequence by repeatedly applying production rules to group
+symbols into syntax trees. Like so<sup id="fnref2"><a href="#fn2">2</a></sup></p>
+<div class="example-wrap"><pre class="language-text"><code>int plus int mult int plus int
+Fact(int) plus int mult int plus int
+Sum(Fact(int)) plus int mult int plus int
+Sum(Fact(int)) plus Fact(int) mult int plus int
+Sum(Fact(int)) plus Fact(Fact(int) mult int) plus int
+Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus int
+Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int)
+Sum(Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int))
+start(Sum(Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int)))</code></pre></div>
+<p>This results in a tree which groups nodes according to the grammar rules given above.
+For illustration:</p>
+<div class="example-wrap"><pre class="language-text"><code>                       start
+                         │
+                        Sum
+         ┌───────────────┴───────────────┬───────┐
+        Sum                              │      Fact
+ ┌───────┼───────────────┐               │       │
+Sum      │              Fact             │       │
+ │       │       ┌───────┼───────┐       │       │
+Fact     │      Fact     │       │       │       │
+ │       │       │       │       │       │       │
+int     plus    int     mult    int     plus    int
+
+ 5       +       4       *       3       +       2</code></pre></div><h4 id="terminal-and-nonterminal-symbols" class="section-header"><a href="#terminal-and-nonterminal-symbols">Terminal and NonTerminal Symbols</a></h4>
+<p>Throughout this documentation, you may see refrences to “terminal” and “non-terminal”
+symbols. A terminal symbol is a symbol in a <a href="index.html#format">grammar specification</a> that
+does not appear on the left-hand side of a production rule, and is therefore
+“terminal” in the sense that it cannot be rewritten any further by the production
+rules. A non-terminal symbol is a symbol that <em>does</em> appear on the left-hand side of a
+production rule, and can therefore be replaced with another sequence of symbols
+according to the rules of the grammar.</p>
+<p>When parsing, the terminal symbols represent the types of concrete tokens to parse. In
+the above example, these are <code>int</code>, for integer literals, <code>plus</code>, for <code>+</code>, and <code>mult</code>,
+for <code>*</code>. When parsing, each instance of one of these symbols corresponds to a concrete
+section of the text, such as bytes 0-1 (“<code>5</code>”) for the first <code>int</code> or bytes 10-11
+(“<code>+</code>”) for the second <code>plus</code>.</p>
+<p>Non-terminal symbols, on the other hand, correspond to higher-order phrases,
+represented as branch nodes in the syntax tree grouping together their constituent
+elements. In the above example, the non-terminals are <code>Fact</code>, for multiplication</p>
+<h2 id="using-parsers" class="section-header"><a href="#using-parsers">Using Parsers</a></h2><h3 id="parser-structure" class="section-header"><a href="#parser-structure">Parser Structure</a></h3>
+<p>A parser is writen as a module in rust source code, containing the items used to parse
+an input. This module assumes only that this crate (<code>parse</code>) is available as an
+external crate and that there is a sister module <code>lexer</code> that contains an enum
+<code>TokenKind</code>, representing the different possible <a href="index.html#terminal-and-non-terminal-symbols">terminal symbols</a> (see
+<a href="index.html#interfacing-with-parsers">below</a> for more information.)</p>
+<p>The parser module contains five public items:</p>
+<ul>
+<li>
+<p>A type alias <code>Token&lt;'a&gt;</code>, which is an alias for [<code>lex::Token&lt;'a, TokenKind&gt;</code>].</p>
+</li>
+<li>
+<p>An enum <code>NonTerm</code> which represents the <a href="index.html#terminal-and-non-terminal-symbols">non-terminal symbols</a> of the grammar.
+The variants of <code>NonTerm</code> are <code>N_&lt;sym&gt;</code> for each non-terminal <a href="index.html#format">symbol</a>
+<code>&lt;sym&gt;</code> of the language. <code>NonTerm</code> implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html"><code>Display</code></a>,
+<a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Debug.html"><code>Debug</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>, and <a href="https://doc.rust-lang.org/1.58.1/core/hash/macros/derive.Hash.html" title="Hash"><code>Hash</code></a>.</p>
+</li>
+<li>
+<p>A struct <code>Ast&lt;'a&gt;</code> which implements <a href="ast/struct.Ast.html" title="ast::Ast"><code>ast::Ast</code></a> with <code>NonTerm = NonTerm</code> and <code>Term = Token&lt;'a&gt;</code>, using the types <code>NonTerm</code> and <code>Token</code> described above. <code>Ast</code>’s represent
+branches in syntax trees, and are returned by <code>Parser</code>’s. An <code>Ast</code> contains a
+<a href="ast/struct.Ast.html#method.label">label</a> in the form of a <code>NonTerm</code> variant, and a list of <a href="ast/struct.Ast.html#method.children">child
+nodes</a> in the form of a vector of <a href="ast/enum.AstNode.html"><code>AstNode</code></a>’s.</p>
+</li>
+<li>
+<p>A struct <code>Parser&lt;'a, L&gt;</code>, which implements [<code>Parser&lt;'a, L, TokenKind, Ast&lt;'a&gt;&gt;</code>]
+where <code>L</code> implements <a href="lex/trait.Tokens.html" title="lex::Tokens"><code>Tokens&lt;'a, TokenKind&gt;</code></a>, with <code>TokenKind</code> and
+<code>Ast&lt;'a&gt;</code> as described above. <code>Parser</code> is, as you might guess, the type of the actual
+parsers responsable for parsing an input stream into a syntax tree.</p>
+</li>
+<li>
+<p>A function <code>parse</code>, which is just a convenience function for <a href="trait.Parser.html#tymethod.new" title="Parser::new"><code>Parser::new</code></a>
+followed by <a href="trait.Parser.html#tymethod.parse" title="Parser::parse()"><code>Parser::parse()</code></a>.</p>
+</li>
+</ul>
+<h4 id="a-note-about-traits" class="section-header"><a href="#a-note-about-traits">A Note About Traits</a></h4>
+<p>The public interface of <code>Parser</code> is completely described by the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>. This
+allows you to access documentation on the generated parser types by looking at the
+documentation for the associated trait as well as write more generic code.</p>
+<p>However, <code>Parser</code> is also guarenteed to independently implement all of the methods of
+the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>, <strong>with no difference between the implementations</strong>. This
+effectivly means that actually importing <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> is optional for using this type.
+In other words, for each method <code>foo</code> on the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>, the generated type
+<code>Parser</code> will also implement <code>foo</code>, with <code>Parser::foo</code> and <code>&lt;Parser as parse::Parser&gt;::foo</code> guaranteed to be equivalent.</p>
+<h3 id="interfacing-with-lexers" class="section-header"><a href="#interfacing-with-lexers">Interfacing with Lexers</a></h3>
+<p>Generally, a <a href="index.html#parser-stucture"><code>Parser</code></a> is incapable of directly parsing a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>; it needs a
+<a href="https://en.wikipedia.org/wiki/Lexer">lexer</a> to “lex” or “tokenize” a string into <a href="lex/struct.Token.html"><code>Token</code></a>’s, which contain a
+sub-<a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> of the source text as well as a <a href="index.html#terminal-and-non-terminal-symbols">terminal symbol</a> indicating how the
+token should be interpreted.</p>
+<p>Parsers (both the <a href="index.html#parser-stucture">generated type</a> and anything else that implements the
+<a href="trait.Parser.html" title="Parser"><code>Parser</code></a> trait) are designed to work with the lexing framework outlined and
+implemented in this crate’s sister package <a href="../lex/index.html"><code>lex</code></a>.</p>
+<p>To give a brief overview<sup id="fnref3"><a href="#fn3">3</a></sup>: A <a href="../lex/lexers/trait.Lexer.html"><code>Lexer</code></a> takes an input <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>
+and returns a <a href="lex/trait.Tokens.html"><code>Tokens</code></a>, which is an iterator over the (lazily lexed) tokens of the
+input. The <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> trait takes a <a href="lex/trait.Tokens.html"><code>Tokens</code></a> and uses it as the input stream for
+parsing.</p>
+<h4 id="tokenkind-and-non-terminal-symbols" class="section-header"><a href="#tokenkind-and-non-terminal-symbols">TokenKind and Non-Terminal Symbols</a></h4>
+<p>As explained <a href="index.html#terminal-and-non-terminal-symbols">above</a>, a grammar contains terminal symbols for tokens, and
+non-terminal symbols for higher phrases. To distinguish the non-terminal symbols, each
+parser module contains an enumeration <a href="index.html#parser-stucture"><code>NonTerm</code></a>, but to distinguish the terminal
+symbols, particularly for use in <a href="lex/struct.Token.html"><code>Token</code></a>’s, an additional type for that is needed as
+well.</p>
+<p>The only assumption made by a <a href="index.html#parser-stucture">parser module</a> about its environment, aside from
+having this crate available, is that there is a sister module called <code>lexer</code>,
+containing an enumeration called <code>TokenKind</code>, whose variants are <code>T_&lt;sym&gt;</code> for each
+terminal symbol <code>&lt;sym&gt;</code> of the language.</p>
+<p><code>TokenKind</code> is imported into the module and used as the type discriminant for
+<a href="lex/struct.Token.html"><code>Token</code></a>’s, (as returned by <a href="lex/struct.Token.html#method.kind"><code>Token::kind</code></a>.)</p>
+<p>What this means, if you’re using the crate <code>lex</code> to generate your lexer, is that you
+should use the macro <a href="../lex/macro.lexer.html"><code>lexer!</code></a> and the macro
+<a href="macro.parser.html"><code>parse::parser!</code></a> in the same module so that the parser can use the
+<code>TokenKind</code> defined in the lexer module.</p>
+<p>Also, if your using <code>lex</code>, make sure that the names of your lexer rules and your
+terminal symbols are the same!</p>
+<h3 id="asts" class="section-header"><a href="#asts"><code>Ast</code>’s</a></h3>
+<p>When a parser has successfully parsed its input, with <a href="trait.Parser.html#tymethod.parse"><code>parse()</code></a>, it
+returns an <a href="index.html#parser-stucture"><code>Ast</code></a>, which represents the <a href="https://en.wikipedia.org/wiki/Parse_tree">syntax tree</a> derived by the
+parser<sup id="fnref4"><a href="#fn4">4</a></sup>.</p>
+<p>For more information on the details of <code>Ast</code>’s, including how to recursively walk
+them, see the documentation on the <a href="ast/struct.Ast.html"><code>Ast</code></a> trait and the module <a href="ast/index.html" title="ast"><code>ast</code></a>. For
+some more information on how they relate to the grammar of a language and how they’re
+built, see the <a href="index.html#grammar-example">above example</a>.</p>
+<h2 id="example" class="section-header"><a href="#example">Example</a></h2>
+<p>This example uses the crate <code>lex</code> to build the lexer <a href="index.html#interfacing-with-lexers">used when parsing</a>. For
+more information on lexers and how the <code>lex</code> crate works, you may wish to consult the
+documentation there.</p>
+<p>For this example, lets try to build a simple calculator that can handle addition,
+multiplication, and grouping terms with parentheses, with the proper precedence.</p>
+<p>We start by making a new project called “<code>calculator</code>” using <code>cargo new</code>, which would
+give us the following directory structure:</p>
+<div class="example-wrap"><pre class="language-text"><code>calculator/
+├── Cargo.toml
+└── src/
+    └── main.rs</code></pre></div>
+<p>Next, edit <code>Cargo.toml</code> to add the crate <code>lex</code> as well as this crate as a dependency
+<em>and</em> a build dependency. It should look something like this:</p>
+<div class="example-wrap"><pre class="language-text"><code>[package]
+name = &quot;calculator&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[dependencies]
+lex = &quot;0.1.0&quot;
+parse = &quot;0.1.0&quot;
+
+[build-dependencies]
+lex = &quot;0.1.0&quot;
+parse = &quot;0.1.0&quot;</code></pre></div>
+<p>Now we’ll specify the lexer by adding our lexer file <code>calculator_lex.lex</code> and creating
+a <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build script</a> in <code>build.rs</code>.</p>
+<div class="example-wrap"><pre class="language-text"><code># in calculator_lex.lex
+
+int : &quot;[0-9]+&quot;
+plus : &quot;\+&quot;
+mult : &quot;\*&quot;
+lparen : &quot;\(&quot;
+rparen : &quot;\)&quot;
+ignore : &quot;\s+&quot;</code></pre></div>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+
+<span class="kw">use</span> <span class="ident">lex::LexerBuilder</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+	<span class="ident">LexerBuilder::new</span>()
+		.<span class="ident">unwrap</span>()
+		.<span class="ident">build</span>()
+		.<span class="ident">expect</span>(<span class="string">&quot;error generating lexer&quot;</span>)
+		.<span class="ident">set_rerun</span>()
+		.<span class="ident">unwrap</span>();
+}</code></pre></div>
+<p>At this point, we would trigger the build scrip by running <code>cargo check</code> or <code>cargo run</code> to make sure that the lexer builds properly.</p>
+<p>After having done that, the next step is to build the parser. This is done in a
+similar mannar to building lexers, where we first write the parser specification file
+“<code>calculator_parse.y</code>”:</p>
+<div class="example-wrap"><pre class="language-text"><code>start -&gt; Sum;
+Sum -&gt; Fact;
+Sum -&gt; Sum plus Fact;
+Fact -&gt; Term;
+Fact -&gt; Fact mult Term;
+Term -&gt; int;
+Term -&gt; lparen Sum rparen;</code></pre></div>
+<p>and then we change <code>build.rs</code> to the following:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// in build.rs</span>
+
+<span class="kw">use</span> <span class="ident">lex::LexerBuilder</span>;
+<span class="kw">use</span> <span class="ident">parse::ParserBuilder</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+	<span class="ident">LexerBuilder::new</span>()
+		.<span class="ident">unwrap</span>()
+		.<span class="ident">build</span>()
+		.<span class="ident">expect</span>(<span class="string">&quot;error generating lexer&quot;</span>)
+		.<span class="ident">set_rerun</span>()
+		.<span class="ident">unwrap</span>();
+
+	<span class="ident">ParserBuilder::build_parser</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">u32</span><span class="op">&gt;</span>()
+		.<span class="ident">expect</span>(<span class="string">&quot;error generating parser&quot;</span>)
+		.<span class="ident">set_rerun</span>()
+		.<span class="ident">unwrap</span>();
+}</code></pre></div>
+<p>At this point it’s a good idea to run <code>cargo check</code> again to make sure that the parser
+is building properly as well.</p>
+<p>Now, although we have created a build script to build the lexer and parser, we still
+need to include them in our project. To do so, we use the <code>lex::lexer!</code> and
+<a href="macro.parser.html" title="parser!"><code>parser!</code></a> macros. edit <code>src/main.rs</code> to the following:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="comment">// in src/main.rs</span>
+
+<span class="kw">use</span> <span class="ident">std::io</span>;
+
+<span class="kw">use</span> <span class="ident">parse::ast::Ast</span>;
+
+<span class="comment">// include the lexer</span>
+<span class="macro">lex::lexer!</span>();
+
+<span class="comment">// include the parser</span>
+<span class="macro">parse::parser!</span>();
+
+<span class="kw">use</span> <span class="ident">lexer::Lexer</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+	<span class="comment">// our input buffer</span>
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">String::new</span>();
+	<span class="kw">let</span> <span class="ident">stdin</span> <span class="op">=</span> <span class="ident">io::stdin</span>();
+	<span class="comment">// our lexer</span>
+	<span class="kw">let</span> <span class="ident">lexer</span> <span class="op">=</span> <span class="ident">Lexer::new</span>();
+	<span class="kw">loop</span> {
+		<span class="ident">buffer</span>.<span class="ident">clear</span>();
+		<span class="ident">stdin</span>.<span class="ident">read_line</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">expect</span>(<span class="string">&quot;unable to read input&quot;</span>);
+		<span class="comment">// create our `Tokens`</span>
+		<span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lexer</span>.<span class="ident">lex</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>);
+		<span class="comment">// parse the input</span>
+		<span class="kw">let</span> <span class="ident">tree</span> <span class="op">=</span> <span class="ident">parser::parse</span>(<span class="ident">tokens</span>).<span class="ident">expect</span>(<span class="string">&quot;unable to parse input&quot;</span>);
+		<span class="comment">// print the tree</span>
+		<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">tree</span>.<span class="ident">display</span>());
+	}
+}</code></pre></div>
+<p>This runs a simple loop that reads a line from the standard input and uses the lexer
+and parse to create an <a href="index.html#parser-stucture"><code>Ast</code></a>. It then prints a representation of the tree using
+<a href="ast/struct.Ast.html#method.display"><code>Ast::display</code></a>. Try running the program with <code>cargo run</code> and
+seeing how it parses things and how the resulting trees match the grammar above. Also
+try seeing what happens when you give it an invalid input: It should cause an error.</p>
+<p>Now, although we have a <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> that can parse our input into an <a href="index.html#parser-stucture"><code>Ast</code></a>, we
+still have to actually <em>do</em> something with the tree: namely, to calculate the
+corresponding value. The work of grouping expression in the correct order and deciding
+what operation to perform on them has essentially been done by the parser, all we have
+left to do is to traverse the tree, applying the operations as appropriate. The module
+<a href="ast/index.html" title="ast"><code>ast</code></a> has some features for walking an <a href="ast/struct.Ast.html"><code>Ast</code></a>, and you can see <a href="ast/index.html#walking-an-ast">the
+documentation there</a> for more information, but in
+short we implement the <a href="ast/trait.Walker.html"><code>Walker</code></a> trait on a struct by describing three
+methods: a method to be called upon entering a branch node
+(<a href="ast/trait.Walker.html#tymethod.on_branch"><code>on_branch</code></a>), a method to be called on leaf nodes
+(<a href="ast/trait.Walker.html#tymethod.on_leaf"><code>on_leaf</code></a>), and a method to be called upon exiting a branch
+node (<a href="ast/trait.Walker.html#tymethod.exit"><code>exit</code></a>.)</p>
+<p>We do this by, essentially, creating a struct that keeps track of all the previously
+calculated values of the current branch node and all ancestral branch nodes. When it
+encounters a leaf node, if that node is an <code>int</code> it parses the value as a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.u32.html" title="u32"><code>u32</code></a> and
+records it. When it leaves a branch node, it takes all the recorded values of the
+child nodes of that branch node and combines them as appropriate (either adding them
+for a <code>Sum</code> node or multiplying them for a <code>Fact</code> node) and records the result as the
+value for that branch node under the previous branch node.</p>
+<p>To implement this, edit <code>src/main.rs</code> to look like the following:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="comment">// in src/main.rs</span>
+
+<span class="kw">use</span> <span class="ident">std::io</span>;
+
+<span class="kw">use</span> <span class="ident">parse::ast</span>::{<span class="ident">Ast</span>, <span class="ident">Walker</span>};
+
+<span class="comment">//include the lexer</span>
+<span class="macro">lex::lexer!</span>();
+
+<span class="kw">use</span> <span class="ident">lexer</span>::{<span class="ident">Lexer</span>, <span class="ident">TokenKind</span>, <span class="ident">Tokens</span>};
+
+<span class="comment">//include the parser</span>
+<span class="macro">parse::parser!</span>();
+
+<span class="kw">use</span> <span class="ident">parser</span>::{<span class="ident">NonTerm</span>, <span class="ident">Token</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">String::new</span>();
+	<span class="kw">let</span> <span class="ident">stdin</span> <span class="op">=</span> <span class="ident">io::stdin</span>();
+	<span class="kw">let</span> <span class="ident">lexer</span> <span class="op">=</span> <span class="ident">Lexer::new</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">calculator</span> <span class="op">=</span> <span class="ident">Calculator::new</span>();
+	<span class="kw">loop</span> {
+		<span class="ident">buffer</span>.<span class="ident">clear</span>();
+		<span class="ident">stdin</span>.<span class="ident">read_line</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">expect</span>(<span class="string">&quot;unable to read input&quot;</span>);
+		<span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lexer</span>.<span class="ident">lex</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>);
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">parse_input</span>(<span class="ident">tokens</span>, <span class="kw-2">&amp;mut</span> <span class="ident">calculator</span>);
+		<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">n</span>);
+	}
+}
+
+<span class="kw">fn</span> <span class="ident">parse_input</span><span class="op">&lt;</span><span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;s</span><span class="op">&gt;</span>(<span class="ident">tokens</span>: <span class="ident">Tokens</span><span class="op">&lt;</span><span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;s</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">calculator</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Calculator</span>) -&gt; <span class="ident">u32</span> {
+	<span class="comment">// parses the tree and handles any errors</span>
+	<span class="kw">let</span> <span class="ident">tree</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser::parse</span>(<span class="ident">tokens</span>) {
+		<span class="prelude-val">Ok</span>(<span class="ident">t</span>) =&gt; <span class="ident">t</span>,
+		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;unable to parse input: {}&quot;</span>, <span class="ident">e</span>),
+	};
+	<span class="comment">// walks the tree</span>
+	<span class="macro">assert!</span>(<span class="ident">tree</span>.<span class="ident">walk</span>(<span class="kw-2">&amp;mut</span> <span class="ident">calculator</span>).<span class="ident">next</span>().<span class="ident">is_none</span>());
+	<span class="comment">// calculates the end result</span>
+	<span class="ident">calculator</span>.<span class="ident">final_result</span>()
+}
+
+<span class="comment">// Our Walker for actually calculating the value of an Ast.</span>
+<span class="comment">//</span>
+<span class="comment">// stack is a list of the parsed values of the child nodes of each of the ancestral branch</span>
+<span class="comment">// nodes, as well as those of the current branch node which is the Vec on top of the</span>
+<span class="comment">// stack.</span>
+<span class="comment">//</span>
+<span class="comment">// When an &#39;int&#39; leaf node is encountered, it&#39;s parsed as a u32 and pushed on to the</span>
+<span class="comment">// vector on the top of the stack. When a branch node is encountered, a new empty Vec is</span>
+<span class="comment">// made and pushed onto the stack.</span>
+<span class="comment">//</span>
+<span class="comment">// When a branch node is left, the top of the stack (the Vec corresponding to the child</span>
+<span class="comment">// nodes of that branch) is poped, and the Vec is then either summed, multiplied, or has</span>
+<span class="comment">// its single value poped, depending on if the branch node is a &#39;Sum&#39;, &#39;Fact&#39;, or &#39;Term&#39;</span>
+<span class="comment">// respectively. The result is then pushed onto the end of the new Vec on top of the</span>
+<span class="comment">// stack.</span>
+<span class="comment">//</span>
+<span class="comment">// After the tree has been walked, the stack consists of a single Vec representing the</span>
+<span class="comment">// child nodes of the top-level &#39;start&#39; node, which should itself consist of a single</span>
+<span class="comment">// element representing the single child &#39;Sum&#39; node. final_result can then be run to</span>
+<span class="comment">// extract that value and return the calculator to a fresh state.</span>
+<span class="kw">struct</span> <span class="ident">Calculator</span> {
+	<span class="ident">stack</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Calculator</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">stack</span>: <span class="macro">vec!</span>[<span class="ident">Vec::new</span>()] }
+	}
+
+	<span class="comment">// pushes &#39;n&#39; onto the end of the Vec on top of self.stack</span>
+	<span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) {
+		<span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">last_mut</span>().<span class="ident">unwrap</span>().<span class="ident">push</span>(<span class="ident">n</span>)
+	}
+
+	<span class="comment">// pops the top Vec of off self.stack</span>
+	<span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()
+	}
+
+	<span class="comment">// resets self to a fresh state and returns the final result of walking a tree.</span>
+	<span class="kw">fn</span> <span class="ident">final_result</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">u32</span> {
+		<span class="macro">assert_eq!</span>(<span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">len</span>(), <span class="number">1</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">summands</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop</span>();
+		<span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Vec::new</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">summands</span>.<span class="ident">len</span>(), <span class="number">1</span>);
+		<span class="ident">summands</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span><span class="op">&gt;</span> <span class="ident">Walker</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">parser::Ast</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Calculator</span> {
+	<span class="comment">// pushes a new Vec onto self.stack for the child nodes of &#39;_tree&#39;</span>
+	<span class="kw">fn</span> <span class="ident">on_branch</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_tree</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">parser::Ast</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) -&gt; (<span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">bool</span>) {
+		<span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Vec::new</span>());
+		(<span class="prelude-val">None</span>, <span class="bool-val">true</span>)
+	}
+
+	<span class="comment">// if leaf is an &#39;int&#39;, parses the underlying str as a u32 and pushes it</span>
+	<span class="kw">fn</span> <span class="ident">on_leaf</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">leaf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">leaf</span>.<span class="ident">kind</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">TokenKind::T_int</span> {
+			<span class="kw">return</span> <span class="prelude-val">None</span>;
+		};
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">val</span>().<span class="ident">parse</span>().<span class="ident">unwrap</span>();
+		<span class="self">self</span>.<span class="ident">push</span>(<span class="ident">n</span>);
+		<span class="prelude-val">None</span>
+	}
+
+	<span class="comment">// pops the top off off self.stack, combines the values as appropriate, and then</span>
+	<span class="comment">// pushes the result</span>
+	<span class="kw">fn</span> <span class="ident">exit</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tree</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">parser::Ast</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">operands</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop</span>();
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tree</span>.<span class="ident">label</span>() {
+			<span class="ident">NonTerm::N_Sum</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">sum</span>(),
+			<span class="ident">NonTerm::N_Fact</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">product</span>(),
+			<span class="ident">NonTerm::N_Term</span> =&gt; {
+				<span class="macro">assert_eq!</span>(<span class="ident">operands</span>.<span class="ident">len</span>(), <span class="number">1</span>);
+				<span class="ident">operands</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()
+			}
+			<span class="ident">NonTerm::N_start</span> =&gt; <span class="macro">unreachable!</span>(),
+		};
+		<span class="self">self</span>.<span class="ident">push</span>(<span class="ident">n</span>);
+		<span class="prelude-val">None</span>
+	}
+}</code></pre></div>
+<p>Try testing it out by running <code>cargo run</code> and seeing how it works!</p>
+<div class="footnotes"><hr><ol><li id="fn1"><p>A note of warning: An actual performance improvement is still
+speculative. I haven’t done any profiling to measure the performance impact, and there
+are potential downsides to implementing it this way: Implementing each state as a
+seperate function could cause excessive paging in and out of the instruction cache.&nbsp;<a href="#fnref1">↩</a></p></li><li id="fn2"><p>Source strings are removed for brevity, so <code>int</code> instead of <code>int(&quot;5&quot;)</code>,
+for example. However, in an actual syntax tree generated by a parser that information
+is still there and can be inspected.&nbsp;<a href="#fnref2">↩</a></p></li><li id="fn3"><p>For more information on the interfaces expected by a parser, view the
+documentation on the trait <a href="::lex::Lexer"><code>Lexer</code></a>. For more information on lexers
+generally, and for tools for making lexers, see the crate <a href="::lex"><code>lex</code></a>.&nbsp;<a href="#fnref3">↩</a></p></li><li id="fn4"><p>The name “Ast” may be a little confusing, since the trees returned by
+parsers are not <em>technically</em> <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax trees</a>, due to them containing all
+of their constituent tokens, even the semantically redundant ones (such as a <code>mult</code>
+under a <code>Fact</code> node in the <a href="crate#grammar-example">example above</a>.) However, <code>Ast</code>’s
+can be modified after they’re created, and it’s not a difficult process to convert one
+to a proper abstract syntax tree.&nbsp;<a href="#fnref4">↩</a></p></li></ol></div></div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="ast/index.html" title="parse::ast mod">ast</a></div><div class="item-right docblock-short"><p>Types and traits for working with (abstract) syntax trees.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="lex/index.html" title="parse::lex mod">lex</a></div><div class="item-right docblock-short"><p>Re-exports from the crate <a href="../lex/index.html" title="lex"><code>lex</code></a>. Used by <a href="index.html#parser-structure">generated
+parsers</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="rly_common/index.html" title="parse::rly_common mod">rly_common</a></div><div class="item-right docblock-short"><p>Re-exports from the crate <a href="../rly_common/index.html" title="rly_common"><code>rly_common</code></a>. Used by <a href="index.html#parser-structure">generated
+parsers</a>.</p>
+</div></div></div><h2 id="macros" class="small-section-header"><a href="#macros">Macros</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.build_parser.html" title="parse::build_parser macro">build_parser</a></div><div class="item-right docblock-short"><p>A convenience macro for building parsers in a <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build script</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.build_parser_with.html" title="parse::build_parser_with macro">build_parser_with</a></div><div class="item-right docblock-short"><p>A macro allowing for building parsers with with specific discriminants.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.parser.html" title="parse::parser macro">parser</a></div><div class="item-right docblock-short"><p>A macro for including a parser generated by a <a href="struct.ParserBuilder.html" title="ParserBuilder"><code>ParserBuilder</code></a> in a project.</p>
+</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.BuilderError.html" title="parse::BuilderError struct">BuilderError</a></div><div class="item-right docblock-short"><p>A re-export of <a href="struct.BuilderError.html"><code>rly_common::builders::Error</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ParserBuilder.html" title="parse::ParserBuilder struct">ParserBuilder</a></div><div class="item-right docblock-short"><p>A helper struct for creating parsers using build scripts</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ParserSpec.html" title="parse::ParserSpec struct">ParserSpec</a></div><div class="item-right docblock-short"><p>A struct representing a compiled collection of LR(1) parser tables.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Rules.html" title="parse::Rules struct">Rules</a></div><div class="item-right docblock-short"><p>A struct representing a parsed collection of grammar or production rules.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.SyntaxError.html" title="parse::SyntaxError struct">SyntaxError</a></div><div class="item-right docblock-short"><p>A type for syntax errors returned by <a href="trait.Parser.html"><code>Parser</code></a>’s.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="parse::Error enum">Error</a></div><div class="item-right docblock-short"><p>An umbrella type for errors returned by a <a href="trait.Parser.html"><code>Parser</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.InvalidDiscriminant.html" title="parse::InvalidDiscriminant enum">InvalidDiscriminant</a></div><div class="item-right docblock-short"><p>An error type for discriminants that aren’t large enough</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.ParserError.html" title="parse::ParserError enum">ParserError</a></div><div class="item-right docblock-short"><p>An umbrella type for the different errors that can occur when generating and
+writing parsers.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.SrcError.html" title="parse::SrcError enum">SrcError</a></div><div class="item-right docblock-short"><p>A syntax error in a parser source.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.SyntaxErrorKind.html" title="parse::SyntaxErrorKind enum">SyntaxErrorKind</a></div><div class="item-right docblock-short"><p>An enum for the kinds of <a href="struct.SyntaxError.html" title="SyntaxError"><code>SyntaxError</code></a>’s.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.FromUsize.html" title="parse::FromUsize trait">FromUsize</a></div><div class="item-right docblock-short"><p>A trait for converting from <a href="https://doc.rust-lang.org/1.58.1/std/primitive.usize.html" title="usize"><code>usize</code></a> to a discriminant. This is required for
+generating a <a href="struct.Rules.html"><code>Rules</code></a> or <a href="struct.ParserSpec.html"><code>ParserSpec</code></a> from a
+source text.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.IntoUsize.html" title="parse::IntoUsize trait">IntoUsize</a></div><div class="item-right docblock-short"><p>A trait for converting from a discriminant to <a href="https://doc.rust-lang.org/1.58.1/std/primitive.usize.html" title="usize"><code>usize</code></a>. This is required for writing
+a parser using a <a href="struct.ParserSpec.html"><code>ParserSpec</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Parser.html" title="parse::Parser trait">Parser</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Prim.html" title="parse::Prim trait">Prim</a></div><div class="item-right docblock-short"><p>An alias for <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/hash/trait.Hash.html" title="Hash"><code>Hash</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>.</p>
+</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.write_from_src.html" title="parse::write_from_src fn">write_from_src</a></div><div class="item-right docblock-short"><p>Parses the grammar specification in <code>src</code> and writes a parser module to <code>fout</code>.</p>
+</div></div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="parse" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
+</body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Types and traits for working with (abstract) syntax trees."><meta name="keywords" content="rust, rustlang, rust-lang, ast"><title>parse::ast - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../parse/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a><h2 class="location">Module ast</h2><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="ast" data-ty="mod" data-relpath="./"></div><script defer src="./sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Module <a href="../index.html">parse</a>::<wbr><a class="mod" href="#">ast</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../../src/parse/ast/mod.rs.html#1-616" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Types and traits for working with (abstract) syntax trees.</p>
+<p>This includes the enum <a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a> and the struct <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>, as well as traits such as
+<a href="trait.Walker.html" title="Walker"><code>Walker</code></a> for walking a tree.</p>
+<h2 id="ast-astnode-and-abstract-syntax-trees" class="section-header"><a href="#ast-astnode-and-abstract-syntax-trees"><code>Ast</code>, <code>AstNode</code>, and (Abstract) Syntax Trees</a></h2>
+<p><a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">Abstract syntax trees</a> and <a href="https://en.wikipedia.org/wiki/Parse_tree">concrete syntax trees</a> are represented through
+<a href="struct.Ast.html" title="Ast"><code>Ast</code></a> and <a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a>. <a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a> represents a node in a syntax tree, either a
+<a href="enum.AstNode.html#variant.Leaf">leaf</a> containing a terminal, or a <a href="enum.AstNode.html#variant.Branch">branch</a> containing
+an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>. An instance of <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> represents a branch node in a syntax tree, with a
+<a href="struct.Ast.html#label-and-children">label</a> and one or more <a href="struct.Ast.html#label-and-children">child</a>
+<a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a>’s.</p>
+<p>In an <a href="struct.Ast.html" title="Ast&lt;N, T&gt;"><code>Ast&lt;N, T&gt;</code></a>, the generic types <code>N</code> and <code>T</code> recursively determine the type of
+labels on branch nodes and the type of leaf nodes, respectively, on the tree as a
+whole; the <a href="struct.Ast.html#name-and-label">label</a> of an <a href="struct.Ast.html" title="Ast&lt;N, T&gt;"><code>Ast&lt;N, T&gt;</code></a> is of type <code>N</code>, and the
+children are of type <a href="enum.AstNode.html" title="AstNode&lt;N, T&gt;"><code>AstNode&lt;N, T&gt;</code></a>, where the <a href="enum.AstNode.html#variant.Leaf">leafs</a> of an
+<a href="enum.AstNode.html" title="AstNode&lt;N, T&gt;"><code>AstNode&lt;N, T&gt;</code></a> are of type <code>T</code> and the <a href="enum.AstNode.html#variant.Branch">branches</a> are of type
+<a href="struct.Ast.html" title="Ast&lt;N, T&gt;"><code>Ast&lt;N, T&gt;</code></a></p>
+<h2 id="walking-an-ast" class="section-header"><a href="#walking-an-ast">Walking an Ast</a></h2>
+<p>This module also contains facilities for recursively walking an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>. These consist
+of a single general pattern with three variations differing based on ownership:
+borrowing, mutable borrowing, and consuming. For each degree of ownership, there are
+two items:</p>
+<ul>
+<li>
+<p>A walker trait, containing three methods: <code>on_branch</code>, to be called when entering a
+branch node, <code>on_leaf</code>, to be called on leaf nodes, and <code>exit</code>, to be called when
+exiting a branch node.</p>
+</li>
+<li>
+<p>And a walking iterator struct that adapts a Walker and implements Iterator by
+recursively walking a tree and returning the results of calling the appropriate
+methods on the Walker.</p>
+</li>
+</ul>
+<p>The different items for each access type/role combo are illustrated on the following
+table.</p>
+<div><table><thead><tr><th></th><th>Trait</th><th>Iter Adapter</th></tr></thead><tbody>
+<tr><td><strong>Borrowing</strong>:</td><td><a href="trait.Walker.html" title="Walker"><code>Walker</code></a></td><td><a href="struct.WalkerIter.html" title="WalkerIter"><code>WalkerIter</code></a></td></tr>
+<tr><td><strong>Mut Borrowing</strong>:</td><td><a href="trait.WalkerMut.html" title="WalkerMut"><code>WalkerMut</code></a></td><td><a href="struct.WalkerIterMut.html" title="WalkerIterMut"><code>WalkerIterMut</code></a></td></tr>
+<tr><td><strong>Consuming</strong>:</td><td><a href="trait.Consumer.html" title="Consumer"><code>Consumer</code></a></td><td><a href="struct.WalkerIntoIter.html" title="WalkerIntoIter"><code>WalkerIntoIter</code></a></td></tr>
+</tbody></table>
+</div>
+<p>For the walker trait, the methods return options; if the returned variant is <a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html#variant.None" title="None"><code>None</code></a>,
+the iterator adapter will skip it and move on to the next node.<sup id="fnref1"><a href="#fn1">1</a></sup></p>
+<p>The <code>on_branch</code> method is also used as a guard by returning a tuple where the second
+item is a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.bool.html" title="bool"><code>bool</code></a><sup id="fnref2"><a href="#fn2">2</a></sup>. If the <a href="https://doc.rust-lang.org/1.58.1/std/primitive.bool.html" title="bool"><code>bool</code></a> is <a href="https://doc.rust-lang.org/1.58.1/std/primitive.bool.html" title="false"><code>false</code></a>, the iterator
+adapter does not descend for that branch, and skips to the next node under the current
+parent branch<sup id="fnref3"><a href="#fn3">3</a></sup>.</p>
+<h3 id="differences" class="section-header"><a href="#differences">Differences</a></h3>
+<p>There are minor differences between the three variations, having to do with the
+different constraints (or lack thereof) on the differeing degrees of ownership.
+Namely:</p>
+<ul>
+<li>
+<p>For <a href="trait.WalkerMut.html" title="WalkerMut"><code>WalkerMut</code></a>, the mutable walker trait, all three methods accept an additional
+<code>parent</code> parameter, which is a reference to the <a href="struct.Ast.html#label-and-children"><code>label</code></a> of the parent node. This
+helps alleviate the need for the <a href="trait.WalkerMut.html" title="WalkerMut"><code>WalkerMut</code></a> to alias references to the <a href="struct.Ast.html#label-and-children"><code>label</code></a>’s
+to keep track of state.</p>
+</li>
+<li>
+<p>For <a href="trait.Consumer.html" title="Consumer&lt;A, T&gt;"><code>Consumer&lt;A, T&gt;</code></a>, the consuming walker trait, the method
+<a href="trait.Consumer.html#tymethod.on_branch"><code>on_branch</code></a> takes ownership of the branch node and returns
+<code>(Option&lt;T&gt;, Option&lt;A&gt;)</code> instead of <code>(Option&lt;T&gt;, bool)</code>. If the <a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html" title="Option&lt;A&gt;"><code>Option&lt;A&gt;</code></a> is
+<a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html#variant.None" title="None"><code>None</code></a>, that node and its descendents are skipped, just like returning <a href="https://doc.rust-lang.org/1.58.1/std/primitive.bool.html" title="false"><code>false</code></a> for
+the other traits. If the <a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html" title="Option&lt;A&gt;"><code>Option&lt;A&gt;</code></a> is [<code>Some(ast)</code>], then the iterator adapter
+(<a href="struct.WalkerIntoIter.html" title="WalkerIntoIter"><code>WalkerIntoIter</code></a>) recursively descends along that tree.</p>
+</li>
+<li>
+<p>For <a href="trait.Walker.html" title="Walker"><code>Walker</code></a>, the borrowing walking trait, the method <a href="trait.Walker.html#tymethod.exit"><code>exit</code></a> takes
+a reference to the branch node as a whole, while the other two traits only act on the
+<a href="struct.Ast.html#label-and-children"><code>label</code></a> of the branch being exited.</p>
+</li>
+</ul>
+<div class="footnotes"><hr><ol><li id="fn1"><p>Note that the “next node” is the one it would have gone to on a
+subsequent call to <a href="Iterator::next"><code>next</code></a>. In other words, if <code>on_branch</code> returns
+<a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html#variant.None" title="None"><code>None</code></a> on a node <code>n</code>, the iterator adapter will descend and move on to the first
+child node of <code>n</code>, rather than going to the next sibling node. For skipping a branch
+node <em>and</em> all its descendants, see the next paragraph.&nbsp;<a href="#fnref1">↩</a></p></li><li id="fn2"><p>With a slight exception for <a href="trait.Consumer.html" title="Consumer"><code>Consumer</code></a>. See the documentation
+there and in the next section for more details.&nbsp;<a href="#fnref2">↩</a></p></li><li id="fn3"><p>Note that the boolean value only controls whether or not the iterator
+descends for that branch node; if the <a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html" title="Option"><code>Option</code></a> result is <a href="https://doc.rust-lang.org/1.58.1/core/option/enum.Option.html#variant.Some" title="Some"><code>Some</code></a>, the iterator
+still returns that result, and simply moves on to the next sibling node on the next
+call to <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html#tymethod.next" title="Iterator::next"><code>Iterator::next</code></a>.&nbsp;<a href="#fnref3">↩</a></p></li></ol></div></div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Ast.html" title="parse::ast::Ast struct">Ast</a></div><div class="item-right docblock-short"><p>This is the trait for <a href="index.html#ast-astnode-and-abstract-syntax-trees">branch nodes in a (abstract) syntax
+tree</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.DisplayTree.html" title="parse::ast::DisplayTree struct">DisplayTree</a></div><div class="item-right docblock-short"><p>A wrapper for an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> that implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html" title="Display"><code>Display</code></a> by recursively printing the
+labels of the branch node and the leaf nodes of its
+<a href="index.html#ast-astnode-and-abstract-syntax-trees">tree</a></p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.IntoIter.html" title="parse::ast::IntoIter struct">IntoIter</a></div><div class="item-right docblock-short"><p>An <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html" title="Iterator"><code>Iterator</code></a> over the <a href="struct.Ast.html#label-and-children">labels</a> and leaf nodes of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Iter.html" title="parse::ast::Iter struct">Iter</a></div><div class="item-right docblock-short"><p>An <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html" title="Iterator"><code>Iterator</code></a> by reference over the nodes of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.IterMut.html" title="parse::ast::IterMut struct">IterMut</a></div><div class="item-right docblock-short"><p>An <a href="https://doc.rust-lang.org/1.58.1/core/iter/traits/iterator/trait.Iterator.html" title="Iterator"><code>Iterator</code></a> by mutable reference over the <a href="struct.Ast.html#label-and-children">labels</a> and
+leaf nodes of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WalkerIntoIter.html" title="parse::ast::WalkerIntoIter struct">WalkerIntoIter</a></div><div class="item-right docblock-short"><p>A struct for <a href="index.html#walking-an-ast">walking</a> an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> while taking ownership of it.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WalkerIter.html" title="parse::ast::WalkerIter struct">WalkerIter</a></div><div class="item-right docblock-short"><p>A struct for <a href="index.html#walking-an-ast">walking</a> an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> by reference.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WalkerIterMut.html" title="parse::ast::WalkerIterMut struct">WalkerIterMut</a></div><div class="item-right docblock-short"><p>A struct for <a href="index.html#walking-an-ast">walking</a> an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> by mutable reference.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.AstElem.html" title="parse::ast::AstElem enum">AstElem</a></div><div class="item-right docblock-short"><p>A component of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>: either a <a href="enum.AstElem.html#variant.Label">label</a> or a <a href="enum.AstElem.html#variant.Leaf">leaf</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.AstNode.html" title="parse::ast::AstNode enum">AstNode</a></div><div class="item-right docblock-short"><p>A node in an <a href="index.html#ast-astnode-and-abstract-syntax-trees">(abstract) syntax tree</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MutNode.html" title="parse::ast::MutNode enum">MutNode</a></div><div class="item-right docblock-short"><p>A component of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a>: either a <a href="enum.MutNode.html#variant.Label">label</a> or a <a href="enum.MutNode.html#variant.Leaf">leaf</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MutRefNode.html" title="parse::ast::MutRefNode enum">MutRefNode</a></div><div class="item-right docblock-short"><p>A mutably borrowing adapter for <a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.RefNode.html" title="parse::ast::RefNode enum">RefNode</a></div><div class="item-right docblock-short"><p>A borrowing adapter for <a href="enum.AstNode.html" title="AstNode"><code>AstNode</code></a>.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Consumer.html" title="parse::ast::Consumer trait">Consumer</a></div><div class="item-right docblock-short"><p>A trait for owning <a href="index.html#walking-an-ast">walkers</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Walker.html" title="parse::ast::Walker trait">Walker</a></div><div class="item-right docblock-short"><p>A trait for borrowing <a href="index.html#walking-an-ast">walkers</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.WalkerMut.html" title="parse::ast::WalkerMut trait">WalkerMut</a></div><div class="item-right docblock-short"><p>A trait for mutably borrowing <a href="index.html#walking-an-ast">walkers</a>.</p>
+</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.reverse.html" title="parse::ast::reverse fn">reverse</a></div><div class="item-right docblock-short"><p>Recursively reverses the order of all the <a href="struct.Ast.html#label-and-children">child</a>
+<a href="enum.AstNode.html">nodes</a> of an <a href="struct.Ast.html" title="Ast"><code>Ast</code></a> and of all sub-trees.</p>
+</div></div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="parse" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+</body></html>
