@@ -321,10 +321,10 @@ version = &quot;0.1.0&quot;
 edition = &quot;2021&quot;
 
 [dependencies]
-lex = &quot;0.1.0&quot;
+lex = { version = &quot;0.1.0&quot;, git = &quot;https://github.com/dsmcdermott/rly&quot; }
 
 [build-dependencies]
-lex = &quot;0.1.0&quot;</code></pre></div>
+lex = { version = &quot;0.1.0&quot;, git = &quot;https://github.com/dsmcdermott/rly&quot; }</code></pre></div>
 <p>(<a href="index.html"><code>lex</code></a> needs to be added as a build dependency so that we can use it in
 <code>build.rs</code>.)</p>
 <p>Then, make a file called “<a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html"><code>build.rs</code></a>” in the package root directory with the
