@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate contains items for generating LR(1) parsers which can recognise and parse languages into concrete syntax trees (also called “parse trees”), which can then be transformed into abstract syntax trees for processing, such as with a compiler or interpreter."><meta name="keywords" content="rust, rustlang, rust-lang, parse"><title>parse - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
-    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../parse/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate parse</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all parse's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="parse" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">parse</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/parse/lib.rs.html#7-822" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains items for generating <a href="https://en.wikipedia.org/wiki/LR_parser">LR(1) parsers</a> which can recognise and
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../parse/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate parse</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all parse's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="parse" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">parse</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/parse/lib.rs.html#7-838" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains items for generating <a href="https://en.wikipedia.org/wiki/LR_parser">LR(1) parsers</a> which can recognise and
 parse languages into <a href="https://en.wikipedia.org/wiki/Parse_tree">concrete syntax trees</a> (also called “parse trees”), which
 can then be transformed into <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax trees</a> for processing, such as with
 a compiler or interpreter.</p>
@@ -46,9 +46,9 @@ representations of symbols by a <a href="struct.Rules.html" title="Rules"><code>
 Generally speaking, there are two different discriminant types to specify when
 building a parser: the discriminant for non-terminal symbols (that is, the symbols
 that can appear on the left-hand side a <a href="https://en.wikipedia.org/wiki/Production_(computer_science)">production rule</a>) and the discriminant
-for terminal symbols. A discriminant type must implement <a href="trait.Prim.html" title="Prim"><code>Prim</code></a>, <a href="trait.FromUsize.html" title="FromUsize"><code>FromUsize</code></a>, and
-<a href="trait.IntoUsize.html" title="IntoUsize"><code>IntoUsize</code></a>, and should be capable of avoiding collisions for the number of symbols
-that it’s required to differentiate.</p>
+for terminal symbols. A discriminant type must implement <a href="trait.Prim.html" title="Prim"><code>Prim</code></a> as well as
+<a href="trait.Discriminant.html" title="Discriminant"><code>Discriminant</code></a>, and should be capable of avoiding collisions for the number of
+symbols that it’s required to differentiate.</p>
 <p>If you’re unsure what to use for a discriminant, <a href="https://doc.rust-lang.org/1.58.1/std/primitive.u32.html" title="u32"><code>u32</code></a> is a good default, and is
 also used by the <a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a> macro as the default type for both terminal and
 non-terminal symbols.</p>
@@ -112,14 +112,22 @@ Fact -&gt;
 ;
 
 Fact-&gt;Term;</code></pre></div>
-<p>A symbol can be describied by the following regex:</p>
+<p>A symbol can be describied by the following regex (with some
+<a href="reserved-symbols">exceptions</a>):</p>
 <div class="example-wrap"><pre class="language-text"><code>	[[:alpha:]]([0-9_[:alpha:]])*</code></pre></div>
 <p>Which matches at least one ASCII alphabetical character, followed by any combination
 of digits <code>0</code> through <code>9</code>, underscores <code>_</code>, or ASCII alphabetical characters.</p>
-<h4 id="start-and-eof" class="section-header"><a href="#start-and-eof">“start” and “eof”</a></h4>
-<p>The symbols <code>start</code> and <code>eof</code> are special: <code>eof</code> is reserved and cannot be used as a
-symbol, and the symbol <code>start</code> must occur exactly once, on the left-hand side of a
-production rule.</p>
+<h4 id="the-start-symbol" class="section-header"><a href="#the-start-symbol">The <code>Start</code> symbol</a></h4>
+<p>The symbol <code>Start</code> is special: <code>Start</code> must occur exactly once, on the left-hand side
+of a production rule. That is, there must be one and only one production rule that
+takes <code>Start</code> as its input, and <code>Start</code> cannot appear on the right-hand side of any
+rules. When parsing, <code>Start</code> is taken to be the starting symbol to which the
+production rules are recursively applied.</p>
+<h4 id="reserved-symbols" class="section-header"><a href="#reserved-symbols">Reserved symbols</a></h4>
+<p>The same names disallowed by rust for <a href="https://doc.rust-lang.org/reference/identifiers.html">use in raw identifiers</a>, namely <code>crate</code>,
+<code>self</code>, <code>super</code>, and <code>Self</code>, also cannot be used in parser specifications. This is due
+to how the symbols are implemented <a href="index.html#parser-stucture">in the generated parsers</a>, which relies on
+using raw identifiers.</p>
 <h3 id="semantics" class="section-header"><a href="#semantics">Semantics</a></h3>
 <p>The grammar rules define the structure of the syntax trees used by the parser and how
 the parser attempts to parse the input.</p>
@@ -128,7 +136,7 @@ the symbol on the left-hand side can be replaced with the sequence of symbols on
 right-hand side.</p>
 <p>Given an input sequence of terminal symbols (paired with their original values,) the
 parser attempts to generate a <em>derivation history</em> for the sequence which describes
-how to generate that sequence by starting with the <a href="index.html#start-and-eof"><code>start</code></a>
+how to generate that sequence by starting with the <a href="index.html#the-start-symbol"><code>Start</code></a>
 symbol, and recurively applying production rules untill the appropriate sequence of
 non-terminals is produced.</p>
 <p>The parser does this by essentially working backwards from the terminals, recursively
@@ -137,12 +145,12 @@ it does this, it builds trees out of the reduced symbols, label each non-leaf no
 the left-hand side of the production rule that was used to make it.</p>
 <h4 id="grammar-example" class="section-header"><a href="#grammar-example">Grammar Example</a></h4>
 <p>Suppose you have the following grammar:</p>
-<div class="example-wrap"><pre class="language-text"><code>start -&gt; Sum;
+<div class="example-wrap"><pre class="language-text"><code>Start -&gt; Sum;
 Sum -&gt; Fact;
 Sum -&gt; Sum plus Fact;
 Fact -&gt; int;
 Fact -&gt; Fact mult int;</code></pre></div>
-<p>With non-terminals <code>start</code>, <code>Sum</code>, and <code>Fact</code>, and terminals <code>plus</code> <code>mult</code> and <code>int</code>.</p>
+<p>With non-terminals <code>Start</code>, <code>Sum</code>, and <code>Fact</code>, and terminals <code>plus</code> <code>mult</code> and <code>int</code>.</p>
 <p>And suppose you have the following input:</p>
 <div class="example-wrap"><pre class="language-text"><code>5 + 4 * 3 + 2</code></pre></div>
 <p>This would first be lexed by a <a href="../lex/lexers/trait.Lexer.html">lexer</a>, producing the following sequence
@@ -158,10 +166,10 @@ Sum(Fact(int)) plus Fact(Fact(int) mult int) plus int
 Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus int
 Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int)
 Sum(Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int))
-start(Sum(Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int)))</code></pre></div>
+Start(Sum(Sum(Sum(Fact(int)) plus Fact(Fact(int) mult int)) plus Fact(int)))</code></pre></div>
 <p>This results in a tree which groups nodes according to the grammar rules given above.
 For illustration:</p>
-<div class="example-wrap"><pre class="language-text"><code>                       start
+<div class="example-wrap"><pre class="language-text"><code>                       Start
                          │
                         Sum
          ┌───────────────┴───────────────┬───────┐
@@ -202,10 +210,12 @@ external crate and that there is a sister module <code>lexer</code> that contain
 </li>
 <li>
 <p>An enum <code>NonTerm</code> which represents the <a href="index.html#terminal-and-non-terminal-symbols">non-terminal symbols</a> of the grammar.
-The variants of <code>NonTerm</code> are <code>N_&lt;sym&gt;</code> for each non-terminal <a href="index.html#format">symbol</a>
-<code>&lt;sym&gt;</code> of the language. <code>NonTerm</code> implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html"><code>Display</code></a>,
+The variants of <code>NonTerm</code> are <code>&lt;sym&gt;</code> for each non-terminal <a href="index.html#format">symbol</a>
+<code>&lt;sym&gt;</code> of the language<sup id="fnref3"><a href="#fn3">3</a></sup>. <code>NonTerm</code> implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html"><code>Display</code></a>,
 <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Debug.html"><code>Debug</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>, and <a href="https://doc.rust-lang.org/1.58.1/core/hash/macros/derive.Hash.html" title="Hash"><code>Hash</code></a>.</p>
 </li>
+</ul>
+<ul>
 <li>
 <p>A struct <code>Ast&lt;'a&gt;</code> which implements <a href="ast/struct.Ast.html" title="ast::Ast"><code>ast::Ast</code></a> with <code>NonTerm = NonTerm</code> and <code>Term = Token&lt;'a&gt;</code>, using the types <code>NonTerm</code> and <code>Token</code> described above. <code>Ast</code>’s represent
 branches in syntax trees, and are returned by <code>Parser</code>’s. An <code>Ast</code> contains a
@@ -240,7 +250,7 @@ token should be interpreted.</p>
 <p>Parsers (both the <a href="index.html#parser-stucture">generated type</a> and anything else that implements the
 <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> trait) are designed to work with the lexing framework outlined and
 implemented in this crate’s sister package <a href="../lex/index.html"><code>lex</code></a>.</p>
-<p>To give a brief overview<sup id="fnref3"><a href="#fn3">3</a></sup>: A <a href="../lex/lexers/trait.Lexer.html"><code>Lexer</code></a> takes an input <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>
+<p>To give a brief overview<sup id="fnref4"><a href="#fn4">4</a></sup>: A <a href="../lex/lexers/trait.Lexer.html"><code>Lexer</code></a> takes an input <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>
 and returns a <a href="lex/trait.Tokens.html"><code>Tokens</code></a>, which is an iterator over the (lazily lexed) tokens of the
 input. The <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> trait takes a <a href="lex/trait.Tokens.html"><code>Tokens</code></a> and uses it as the input stream for
 parsing.</p>
@@ -265,7 +275,7 @@ terminal symbols are the same!</p>
 <h3 id="asts" class="section-header"><a href="#asts"><code>Ast</code>’s</a></h3>
 <p>When a parser has successfully parsed its input, with <a href="trait.Parser.html#tymethod.parse"><code>parse()</code></a>, it
 returns an <a href="index.html#parser-stucture"><code>Ast</code></a>, which represents the <a href="https://en.wikipedia.org/wiki/Parse_tree">syntax tree</a> derived by the
-parser<sup id="fnref4"><a href="#fn4">4</a></sup>.</p>
+parser<sup id="fnref5"><a href="#fn5">5</a></sup>.</p>
 <p>For more information on the details of <code>Ast</code>’s, including how to recursively walk
 them, see the documentation on the <a href="ast/struct.Ast.html"><code>Ast</code></a> trait and the module <a href="ast/index.html" title="ast"><code>ast</code></a>. For
 some more information on how they relate to the grammar of a language and how they’re
@@ -322,7 +332,7 @@ ignore : &quot;\s+&quot;</code></pre></div>
 <p>After having done that, the next step is to build the parser. This is done in a
 similar mannar to building lexers, where we first write the parser specification file
 “<code>calculator_parse.y</code>”:</p>
-<div class="example-wrap"><pre class="language-text"><code>start -&gt; Sum;
+<div class="example-wrap"><pre class="language-text"><code>Start -&gt; Sum;
 Sum -&gt; Fact;
 Sum -&gt; Sum plus Fact;
 Fact -&gt; Term;
@@ -469,7 +479,7 @@ value for that branch node under the previous branch node.</p>
 <span class="comment">// stack.</span>
 <span class="comment">//</span>
 <span class="comment">// After the tree has been walked, the stack consists of a single Vec representing the</span>
-<span class="comment">// child nodes of the top-level &#39;start&#39; node, which should itself consist of a single</span>
+<span class="comment">// child nodes of the top-level &#39;Start&#39; node, which should itself consist of a single</span>
 <span class="comment">// element representing the single child &#39;Sum&#39; node. final_result can then be run to</span>
 <span class="comment">// extract that value and return the calculator to a fresh state.</span>
 <span class="kw">struct</span> <span class="ident">Calculator</span> {
@@ -523,13 +533,13 @@ value for that branch node under the previous branch node.</p>
 	<span class="kw">fn</span> <span class="ident">exit</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tree</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Ast</span><span class="op">&lt;</span><span class="ident">NonTerm</span>, <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">operands</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop</span>();
 		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tree</span>.<span class="ident">label</span>() {
-			<span class="ident">NonTerm::N_Sum</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">sum</span>(),
-			<span class="ident">NonTerm::N_Fact</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">product</span>(),
-			<span class="ident">NonTerm::N_Term</span> =&gt; {
+			<span class="ident">NonTerm::Sum</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">sum</span>(),
+			<span class="ident">NonTerm::Fact</span> =&gt; <span class="ident">operands</span>.<span class="ident">into_iter</span>().<span class="ident">product</span>(),
+			<span class="ident">NonTerm::Term</span> =&gt; {
 				<span class="macro">assert_eq!</span>(<span class="ident">operands</span>.<span class="ident">len</span>(), <span class="number">1</span>);
 				<span class="ident">operands</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()
 			}
-			<span class="ident">NonTerm::N_start</span> =&gt; <span class="macro">unreachable!</span>(),
+			<span class="ident">NonTerm::Start</span> =&gt; <span class="macro">unreachable!</span>(),
 		};
 		<span class="self">self</span>.<span class="ident">push</span>(<span class="ident">n</span>);
 		<span class="prelude-val">None</span>
@@ -541,14 +551,16 @@ speculative. I haven’t done any profiling to measure the performance impact, a
 are potential downsides to implementing it this way: Implementing each state as a
 seperate function could cause excessive paging in and out of the instruction cache.&nbsp;<a href="#fnref1">↩</a></p></li><li id="fn2"><p>Source strings are removed for brevity, so <code>int</code> instead of <code>int(&quot;5&quot;)</code>,
 for example. However, in an actual syntax tree generated by a parser that information
-is still there and can be inspected.&nbsp;<a href="#fnref2">↩</a></p></li><li id="fn3"><p>For more information on the interfaces expected by a parser, view the
+is still there and can be inspected.&nbsp;<a href="#fnref2">↩</a></p></li><li id="fn3"><p>If a symbol name happens to be a keyword, such as <code>continue</code> or <code>extern</code>, the
+enum variant can be accessed by using <a href="https://doc.rust-lang.org/reference/identifiers.html#raw-identifiers">raw identifiers</a>. For example, the variant
+for a symbol called <code>loop</code> could be accessed as <code>NonTerm::r#loop</code>.&nbsp;<a href="#fnref3">↩</a></p></li><li id="fn4"><p>For more information on the interfaces expected by a parser, view the
 documentation on the trait <a href="::lex::Lexer"><code>Lexer</code></a>. For more information on lexers
-generally, and for tools for making lexers, see the crate <a href="::lex"><code>lex</code></a>.&nbsp;<a href="#fnref3">↩</a></p></li><li id="fn4"><p>The name “Ast” may be a little confusing, since the trees returned by
+generally, and for tools for making lexers, see the crate <a href="::lex"><code>lex</code></a>.&nbsp;<a href="#fnref4">↩</a></p></li><li id="fn5"><p>The name “Ast” may be a little confusing, since the trees returned by
 parsers are not <em>technically</em> <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax trees</a>, due to them containing all
 of their constituent tokens, even the semantically redundant ones (such as a <code>mult</code>
 under a <code>Fact</code> node in the <a href="crate#grammar-example">example above</a>.) However, <code>Ast</code>’s
 can be modified after they’re created, and it’s not a difficult process to convert one
-to a proper abstract syntax tree.&nbsp;<a href="#fnref4">↩</a></p></li></ol></div></div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+to a proper abstract syntax tree.&nbsp;<a href="#fnref5">↩</a></p></li></ol></div></div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="ast/index.html" title="parse::ast mod">ast</a></div><div class="item-right docblock-short"><p>Types and traits for working with (abstract) syntax trees.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="lex/index.html" title="parse::lex mod">lex</a></div><div class="item-right docblock-short"><p>Re-exports from the crate <a href="../lex/index.html" title="lex"><code>lex</code></a>. Used by <a href="index.html#parser-structure">generated
 parsers</a>.</p>
@@ -572,11 +584,7 @@ writing parsers.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.SrcError.html" title="parse::SrcError enum">SrcError</a></div><div class="item-right docblock-short"><p>A syntax error in a parser source.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.SyntaxErrorKind.html" title="parse::SyntaxErrorKind enum">SyntaxErrorKind</a></div><div class="item-right docblock-short"><p>An enum for the kinds of <a href="struct.SyntaxError.html" title="SyntaxError"><code>SyntaxError</code></a>’s.</p>
 </div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
-<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.FromUsize.html" title="parse::FromUsize trait">FromUsize</a></div><div class="item-right docblock-short"><p>A trait for converting from <a href="https://doc.rust-lang.org/1.58.1/std/primitive.usize.html" title="usize"><code>usize</code></a> to a discriminant. This is required for
-generating a <a href="struct.Rules.html"><code>Rules</code></a> or <a href="struct.ParserSpec.html"><code>ParserSpec</code></a> from a
-source text.</p>
-</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.IntoUsize.html" title="parse::IntoUsize trait">IntoUsize</a></div><div class="item-right docblock-short"><p>A trait for converting from a discriminant to <a href="https://doc.rust-lang.org/1.58.1/std/primitive.usize.html" title="usize"><code>usize</code></a>. This is required for writing
-a parser using a <a href="struct.ParserSpec.html"><code>ParserSpec</code></a>.</p>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Discriminant.html" title="parse::Discriminant trait">Discriminant</a></div><div class="item-right docblock-short"><p>A trait for [discriminant types].</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Parser.html" title="parse::Parser trait">Parser</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Prim.html" title="parse::Prim trait">Prim</a></div><div class="item-right docblock-short"><p>An alias for <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/hash/trait.Hash.html" title="Hash"><code>Hash</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>.</p>
 </div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.write_from_src.html" title="parse::write_from_src fn">write_from_src</a></div><div class="item-right docblock-short"><p>Parses the grammar specification in <code>src</code> and writes a parser module to <code>fout</code>.</p>

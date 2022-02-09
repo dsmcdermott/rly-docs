@@ -786,6 +786,8 @@
 <span id="785">785</span>
 <span id="786">786</span>
 <span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains code for writing a parser from a grammar rule specification.</span>
 <span class="comment">// &#39;Rules&#39; represents a set of grammar or production rules, and ParserSpec represents a</span>
 <span class="comment">// set of generated tables for a LR(1) parser. Rules&#39; contain references to the source</span>
@@ -798,11 +800,13 @@
 <span class="comment">// implement Display by writing out their data as the correctly formatted components.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
+	<span class="ident">START</span>,
+	<span class="ident">EOF</span>,
 	<span class="ident">error::ParserError</span>,
 	<span class="ident">grammar_rule_structures::Prim</span>,
 	<span class="ident">grammar_rules::GrammarRules</span>,
 	<span class="ident">scanning</span>::{<span class="ident">Scanner</span>, <span class="ident">SrcError</span>},
-	<span class="ident">sym_map</span>::{<span class="ident">FromUsize</span>, <span class="ident">IntoUsize</span>, <span class="ident">InvalidDiscriminant</span>, <span class="ident">SymMap</span>},
+	<span class="ident">sym_map</span>::{<span class="ident">Discriminant</span>, <span class="ident">InvalidDiscriminant</span>, <span class="ident">SymMap</span>},
 	<span class="ident">table_construction::Table</span>,
 };
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -825,7 +829,7 @@
 <span class="doccomment">/// use parse::Rules;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let src = r&quot;</span>
-<span class="doccomment">/// 	start -&gt; Expr;</span>
+<span class="doccomment">/// 	Start -&gt; Expr;</span>
 <span class="doccomment">/// 	Expr -&gt; Fact;</span>
 <span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 <span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -845,7 +849,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// let mut map: HashMap&lt;&amp;str, Vec&lt;Box&lt;[&amp;str]&gt;&gt;&gt; = HashMap::new();</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// map.insert(&quot;start&quot;, vec![[&quot;Expr&quot;].into()]);</span>
+<span class="doccomment">/// map.insert(&quot;Start&quot;, vec![[&quot;Expr&quot;].into()]);</span>
 <span class="doccomment">/// map.insert(&quot;Expr&quot;, vec![[&quot;Fact&quot;].into()]);</span>
 <span class="doccomment">/// map.insert(&quot;Fact&quot;, vec![</span>
 <span class="doccomment">/// 	[&quot;lparen&quot;, &quot;Expr&quot;, &quot;rparen&quot;].into(),</span>
@@ -870,7 +874,7 @@
 <span class="doccomment">/// use parse::Rules;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let src = r&quot;</span>
-<span class="doccomment">/// 	start -&gt; Expr;</span>
+<span class="doccomment">/// 	Start -&gt; Expr;</span>
 <span class="doccomment">/// 	Expr -&gt; Fact;</span>
 <span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 <span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -910,15 +914,15 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Rules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">from_sym_map</span>(
 		<span class="ident">map</span>: <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 		<span class="ident">rules</span>: <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>]<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">non_term_val</span>(<span class="string">&quot;start&quot;</span>).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="ident">eof</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">term_val</span>(<span class="string">&quot;eof&quot;</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">non_term_val</span>(<span class="ident">START</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">eof</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">term_val</span>(<span class="ident">EOF</span>).<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">rules</span> <span class="op">=</span> <span class="ident">GrammarRules::new</span>(<span class="ident">map</span>.<span class="ident">grammar_rules</span>(<span class="ident">rules</span>)<span class="question-mark">?</span>, <span class="ident">start</span>, <span class="ident">eof</span>);
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">map</span>, <span class="ident">rules</span> })
 	}
@@ -940,7 +944,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let mut map: HashMap&lt;&amp;str, Vec&lt;Box&lt;[&amp;str]&gt;&gt;&gt; = HashMap::new();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// map.insert(&quot;start&quot;, vec![[&quot;Expr&quot;].into()]);</span>
+	<span class="doccomment">/// map.insert(&quot;Start&quot;, vec![[&quot;Expr&quot;].into()]);</span>
 	<span class="doccomment">/// map.insert(&quot;Expr&quot;, vec![[&quot;Fact&quot;].into()]);</span>
 	<span class="doccomment">/// map.insert(&quot;Fact&quot;, vec![</span>
 	<span class="doccomment">/// 	[&quot;lparen&quot;, &quot;Expr&quot;, &quot;rparen&quot;].into(),</span>
@@ -971,7 +975,7 @@
 	<span class="doccomment">/// use parse::Rules;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -990,8 +994,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Rules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="doccomment">/// Generates a [`ParserSpec`] and uses it to write a parser module to `fout`.</span>
 	<span class="doccomment">///</span>
@@ -1002,7 +1006,7 @@
 	<span class="doccomment">/// use parse::Rules;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1039,7 +1043,7 @@
 	<span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1069,7 +1073,7 @@
 <span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let src = r&quot;</span>
-<span class="doccomment">/// 	start -&gt; Expr;</span>
+<span class="doccomment">/// 	Start -&gt; Expr;</span>
 <span class="doccomment">/// 	Expr -&gt; Fact;</span>
 <span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 <span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1103,7 +1107,7 @@
 	<span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1137,7 +1141,7 @@
 	<span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1156,7 +1160,7 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>, <span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span><span class="op">&gt;</span> <span class="ident">ParserSpec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>, <span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span><span class="op">&gt;</span> <span class="ident">ParserSpec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">display</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ParserDisplay</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;_</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="ident">ParserDisplay</span>(<span class="self">self</span>)
 	}
@@ -1171,7 +1175,7 @@
 	<span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1207,7 +1211,7 @@
 	<span class="doccomment">/// use parse::{Rules, ParserSpec};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let src = r&quot;</span>
-	<span class="doccomment">/// 	start -&gt; Expr;</span>
+	<span class="doccomment">/// 	Start -&gt; Expr;</span>
 	<span class="doccomment">/// 	Expr -&gt; Fact;</span>
 	<span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 	<span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1232,8 +1236,8 @@
 
 <span class="comment">//pub fn write_from_rules&lt;&#39;a, &#39;b, N, T, W&gt;(rules: &amp;&#39;b Rules&lt;&#39;a, N, T&gt;, fout: W) -&gt; io::Result&lt;()&gt;</span>
 <span class="comment">//where</span>
-<span class="comment">//	N: Prim + IntoUsize,</span>
-<span class="comment">//	T: Prim + IntoUsize,</span>
+<span class="comment">//	N: Prim + Discriminant,</span>
+<span class="comment">//	T: Prim + Discriminant,</span>
 <span class="comment">//	W: Write,</span>
 <span class="comment">//{</span>
 <span class="comment">//	ParserSpec::new(rules).write(fout)</span>
@@ -1241,8 +1245,8 @@
 
 <span class="comment">//pub fn write_from_rule_map&lt;&#39;a, N, T, W&gt;(map: &amp;HashMap&lt;&amp;&#39;a str, Vec&lt;Box&lt;[&amp;&#39;a str]&gt;&gt;&gt;, fout: W) -&gt; io::Result&lt;()&gt;</span>
 <span class="comment">//where</span>
-<span class="comment">//	N: Prim + IntoUsize + FromUsize,</span>
-<span class="comment">//	T: Prim + IntoUsize + FromUsize,</span>
+<span class="comment">//	N: Prim + Discriminant,</span>
+<span class="comment">//	T: Prim + Discriminant,</span>
 <span class="comment">//	W: Write,</span>
 <span class="comment">//{</span>
 <span class="comment">//	Rules::&lt;&#39;a, N, T&gt;::from_rule_map(map).gen_spec().write(fout)</span>
@@ -1257,7 +1261,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">/// let src = r&quot;</span>
-<span class="doccomment">/// 	start -&gt; Expr;</span>
+<span class="doccomment">/// 	Start -&gt; Expr;</span>
 <span class="doccomment">/// 	Expr -&gt; Fact;</span>
 <span class="doccomment">/// 	Fact -&gt; lparen Expr rparen;</span>
 <span class="doccomment">/// 	Fact -&gt; n;</span>
@@ -1271,8 +1275,8 @@
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_from_src</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span>, <span class="ident">W</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">src</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">S</span>, <span class="ident">fout</span>: <span class="ident">W</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 	<span class="ident">W</span>: <span class="ident">Write</span>,
 	<span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>,
 {
@@ -1284,7 +1288,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">NonTermVariants</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> <span class="ident">sym</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">non_terms</span>() {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tN_{},\n\t&quot;</span>, <span class="ident">sym</span>)<span class="question-mark">?</span>;
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tr#{},\n\t&quot;</span>, <span class="ident">sym</span>)<span class="question-mark">?</span>;
 		})
 	}
 }
@@ -1294,18 +1298,18 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Names</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> <span class="ident">sym</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">non_terms</span>() {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tNonTerm::N_{sym} =&gt; \&quot;{sym}\&quot;,\n\t\t\t\t&quot;</span>, <span class="ident">sym</span> <span class="op">=</span> <span class="ident">sym</span>)<span class="question-mark">?</span>;
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tNonTerm::r#{sym} =&gt; \&quot;{sym}\&quot;,\n\t\t\t\t&quot;</span>, <span class="ident">sym</span> <span class="op">=</span> <span class="ident">sym</span>)<span class="question-mark">?</span>;
 		})
 	}
 }
 
 <span class="kw">struct</span> <span class="ident">Shifts</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">T</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Shifts</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> (<span class="ident">term</span>, <span class="ident">goto</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">iter</span>().<span class="ident">copied</span>() {
@@ -1321,19 +1325,19 @@
 
 <span class="kw">struct</span> <span class="ident">Reductions</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Rules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">T</span>, (<span class="ident">N</span>, <span class="ident">usize</span>))<span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Reductions</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">write</span> <span class="op">=</span> <span class="op">|</span><span class="ident">la</span>: <span class="ident">std::fmt::Arguments</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">lhs</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>, <span class="ident">n</span>: <span class="kw-2">&amp;</span><span class="ident">usize</span><span class="op">|</span> {
 			<span class="macro">write!</span>(
 				<span class="ident">f</span>,
-				<span class="string">&quot;{la} =&gt; return ret(NonTerm::N_{lhs}, val, {n}),\n\t\t\t\t&quot;</span>,
+				<span class="string">&quot;{la} =&gt; return ret(NonTerm::r#{lhs}, val, {n}),\n\t\t\t\t&quot;</span>,
 				<span class="ident">la</span> <span class="op">=</span> <span class="ident">la</span>,
 				<span class="ident">lhs</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">map</span>().<span class="ident">non_term</span>(<span class="kw-2">*</span><span class="ident">lhs</span>),
 				<span class="ident">n</span> <span class="op">=</span> <span class="ident">n</span>
@@ -1355,17 +1359,17 @@
 
 <span class="kw">struct</span> <span class="ident">Gotos</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">N</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Gotos</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> (<span class="ident">sym</span>, <span class="ident">goto</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">iter</span>().<span class="ident">copied</span>() {
 			<span class="macro">write!</span>(
 				<span class="ident">f</span>,
-				<span class="string">&quot;\n\t\t\t\t\t\tNonTerm::N_{sym} =&gt; self.s{goto}(AstNode::Branch(s)),&quot;</span>,
+				<span class="string">&quot;\n\t\t\t\t\t\tNonTerm::r#{sym} =&gt; self.s{goto}(AstNode::Branch(s)),&quot;</span>,
 				<span class="ident">sym</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">non_term</span>(<span class="ident">sym</span>),
 				<span class="ident">goto</span> <span class="op">=</span> <span class="ident">goto</span>
 			)<span class="question-mark">?</span>;
@@ -1398,13 +1402,13 @@
 
 <span class="kw">struct</span> <span class="ident">TableDetails</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Table</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">TableDetails</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="self">self</span>.<span class="number">1</span>.<span class="ident">display_items</span>(
@@ -1417,13 +1421,13 @@
 
 <span class="kw">struct</span> <span class="ident">State</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Rules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Table</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">State</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="kw">let</span> (<span class="ident">shifts</span>, <span class="ident">reductions</span>, <span class="ident">gotos</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">actions</span>();
@@ -1433,7 +1437,7 @@
 				<span class="string">&quot;&quot;</span>,
 				<span class="string">&quot;Result&lt;Ast&lt;&#39;a&gt;&gt;&quot;</span>,
 				<span class="string">&quot;&quot;</span>,
-				<span class="string">&quot;\n\t\t\t\t\t\tNonTerm::N_start =&gt; return Ok(s),&quot;</span>,
+				<span class="string">&quot;\n\t\t\t\t\t\tSTART =&gt; return Ok(s),&quot;</span>,
 				<span class="string">&quot;panic!(\&quot;Unexpected error in parsing\&quot;)&quot;</span>,
 			)
 		} <span class="kw">else</span> {
@@ -1464,13 +1468,13 @@
 
 <span class="kw">struct</span> <span class="ident">States</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">ParserSpec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>;
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">States</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> <span class="ident">table</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">tables</span> {
@@ -1481,8 +1485,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ParserSpec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">token_kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
 		<span class="string">&quot;use super::lexer::TokenKind;&quot;</span>
@@ -1497,7 +1501,7 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-		<span class="macro">format!</span>(<span class="string">&quot;N_{}&quot;</span>, <span class="self">self</span>.<span class="ident">map</span>().<span class="ident">non_term</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">gr</span>().<span class="ident">start</span>()))
+		<span class="macro">format!</span>(<span class="string">&quot;r#{}&quot;</span>, <span class="self">self</span>.<span class="ident">map</span>().<span class="ident">non_term</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">gr</span>().<span class="ident">start</span>()))
 	}
 
 	<span class="kw">fn</span> <span class="ident">states</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">States</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;_</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> {
@@ -1509,8 +1513,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ParserDisplay</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
-	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">IntoUsize</span>,
+	<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+	<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="macro">write!</span>(
@@ -1533,7 +1537,7 @@
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;
 
-start -&gt; Expr;
+Start -&gt; Expr;
 Expr -&gt; Fact ; 
 
 Fact -&gt; lparen Expr rparen

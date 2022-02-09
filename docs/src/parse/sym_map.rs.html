@@ -427,106 +427,19 @@
 <span id="426">426</span>
 <span id="427">427</span>
 <span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
-<span id="460">460</span>
-<span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the struct SymMap, which is responsable for defining and</span>
 <span class="comment">// processing the mapping between discriminants for terminal and non-terminal symbols and</span>
 <span class="comment">// the str representations of those symbols.</span>
 <span class="comment">//</span>
-<span class="comment">// To be converted from a str, a discriminant type must implement FromUsize, and to be</span>
-<span class="comment">// converted, a discriminant type must implement IntoUsize.</span>
+<span class="comment">// To be converted to or from a str, a discriminant type must implement Discriminant.</span>
 <span class="comment">//</span>
 <span class="comment">// SymMap converts between str&#39;s and discriminants by keeping a Vec of str&#39;s for non-terms</span>
 <span class="comment">// and a Vec of str&#39;s for terminals, both of which are sorted. To convert from a</span>
-<span class="comment">// discriminant to a str, IntoUsize::into is called on the discriminant and the resulting</span>
-<span class="comment">// value is used as an index into the corresponding Vec of str&#39;s to retrieve the str value</span>
-<span class="comment">// of the discriminant. To convert from a str to a discriminant, the string is found in</span>
-<span class="comment">// the corresponding vector using slice::binary_search(), and FromUsize::from is called on</span>
-<span class="comment">// the resulting index to get the discriminant.</span>
-
-<span class="comment">// TODO: Combine FromUsize and IntoUsize into a single trait; I dont see the sense in</span>
-<span class="comment">// keeping them seperate anymore.</span>
+<span class="comment">// discriminant to a str, Discriminant::into is called on the discriminant and the</span>
+<span class="comment">// resulting value is used as an index into the corresponding Vec of str&#39;s to retrieve the</span>
+<span class="comment">// str value of the discriminant. To convert from a str to a discriminant, the string is</span>
+<span class="comment">// found in the corresponding vector using slice::binary_search(), and Discriminant::from</span>
+<span class="comment">// is called on the resulting index to get the discriminant.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections::BTreeSet</span>,
@@ -535,43 +448,33 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
+	<span class="ident">EOF</span>,
+	<span class="ident">START</span>,
 	<span class="ident">grammar_rule_structures</span>::{<span class="ident">Prim</span>, <span class="ident">Symbol</span>},
 	<span class="ident">scanning::RuleMap</span>,
 };
 
-<span class="doccomment">/// A trait for converting from [`usize`] to a discriminant. This is required for</span>
-<span class="doccomment">/// generating a [`Rules`](super::Rules) or [`ParserSpec`](super::ParserSpec) from a</span>
-<span class="doccomment">/// source text.</span>
+<span class="doccomment">/// A trait for [discriminant types].</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// A type that implements both [`FromUsize`] and [`Eq`] must ensure that the</span>
-<span class="doccomment">/// implementation of [`from`](FromUsize::from) must preserve and reflect equality, e.g.:</span>
+<span class="doccomment">/// [`Discriminant`] describes how to convert a type to and from [`usize`], as well as the</span>
+<span class="doccomment">/// maximum [`usize`] value it&#39;s interoperable with. This is used internally when</span>
+<span class="doccomment">/// generating parsers to convert between [discriminant types] and indexes into</span>
+<span class="doccomment">/// collections of [`str`]&#39;s representing the original symbols.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// use parse::FromUsize;</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// fn test_eq&lt;T: Eq + FromUsize&gt;(l: usize, r: usize) {</span>
-<span class="doccomment">/// 	let is_eq_int = l == r;</span>
-<span class="doccomment">/// 	let is_eq = T::from(l) == T::from(r);</span>
-<span class="doccomment">/// 	assert_eq!(is_eq_int, is_eq);	// l == r if and only if T::from(l) == T::from(r)</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Implementing both FromUsize and IntoUsize</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// If a type implements both [`FromUsize`] and [`IntoUsize`], it should ensure that</span>
-<span class="doccomment">/// [`from`] and [`into`] are isomorphisms. That is, calling [`from`] and then [`into`]</span>
-<span class="doccomment">/// should return the same number as the one you started with (or panic,) and calling</span>
-<span class="doccomment">/// [`into`] and then [`from`] should return an equivalent object to the original (or</span>
-<span class="doccomment">/// panic.) For example:</span>
+<span class="doccomment">/// If a type implements both [`Discriminant`] and [`Eq`], then [`Self::from`] and</span>
+<span class="doccomment">/// [`Self::into`] should be isomorphisms when restricted to their valid values. That is,</span>
+<span class="doccomment">/// chaining [`Self::from`] with [`Self::into`] should produce the same number as the one</span>
+<span class="doccomment">/// you started with (or panic,) and chaining [`Self::into`] with [`Self::from`] should</span>
+<span class="doccomment">/// produce a result equal to the original (or panic.) For example:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
-<span class="doccomment">/// use parse::{FromUsize, IntoUsize};</span>
+<span class="doccomment">/// use parse::Discriminant;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// fn endo_t&lt;T: FromUsize + IntoUsize&gt;(t: T) -&gt; T {</span>
-<span class="doccomment">/// 	T::from(t.into())</span>
+<span class="doccomment">/// fn endo_t&lt;T: Discriminant&gt;(t: T) -&gt; T {</span>
+<span class="doccomment">/// 	&lt;T as Discriminant&gt;::from(t.into())</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// fn endo_usize&lt;T: FromUsize + IntoUsize&gt;(n: usize) -&gt; usize {</span>
+<span class="doccomment">/// fn endo_usize&lt;T: Discriminant&gt;(n: usize) -&gt; usize {</span>
 <span class="doccomment">/// 	T::from(n).into()</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
@@ -579,9 +482,8 @@
 <span class="doccomment">/// assert_eq!(128, endo_usize::&lt;u8&gt;(128));</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// [`into`]: IntoUsize::into</span>
-<span class="doccomment">/// [`from`]: FromUsize::from</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FromUsize</span> {
+<span class="doccomment">/// [discriminant types](crate#discriminants)</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Discriminant</span> {
 	<span class="doccomment">/// The maximum size that `Self` can be converted from.</span>
 	<span class="kw">const</span> <span class="ident">MAX</span>: <span class="ident">usize</span>;
 
@@ -589,127 +491,63 @@
 	<span class="doccomment">/// [`Self::MAX`], otherwise returns [`Some`]. For exmple:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```</span>
-	<span class="doccomment">/// use parse::FromUsize;</span>
+	<span class="doccomment">/// use parse::Discriminant;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// assert_eq!(&lt;u8 as FromUsize&gt;::MAX, 255);</span>
+	<span class="doccomment">/// assert_eq!(&lt;u8 as Discriminant&gt;::MAX, 255);</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let none = &lt;u8 as FromUsize&gt;::try_from(256);</span>
-	<span class="doccomment">/// let some = &lt;u8 as FromUsize&gt;::try_from(255);</span>
+	<span class="doccomment">/// let none = &lt;u8 as Discriminant&gt;::try_from(256);</span>
+	<span class="doccomment">/// let some = &lt;u8 as Discriminant&gt;::try_from(255);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// assert!(matches!(none, None));</span>
 	<span class="doccomment">/// assert!(matches!(some, Some(255)));</span>
 	<span class="doccomment">/// ```</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both </span>
+	<span class="doccomment">/// [`Discriminant`] and [`Eq`].</span>
 	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="self">Self</span>: <span class="ident">Sized</span>;
 
-	<span class="doccomment">/// Equivalent to [`Self::try_from(n).unwrap()`](FromUsize::try_from).</span>
+	<span class="doccomment">/// Equivalent to [`Self::try_from(n).unwrap()`](Discriminant::try_from).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panic</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Implementations should panic if `n` is greater than [`Self::MAX`]. Otherwise, the</span>
 	<span class="doccomment">/// result should be the same as calling [`unwrap`](Option::unwrap) on the result of</span>
 	<span class="doccomment">/// [`Self::try_from`].</span>
-	<span class="doccomment">///</span>
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span>
 	<span class="kw">where</span>
 		<span class="self">Self</span>: <span class="ident">Sized</span>,
 	{
-		<span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">n</span>).<span class="ident">expect</span>(<span class="string">&quot;called FromUsize::from on an invalid value&quot;</span>)
+		<span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">n</span>).<span class="ident">expect</span>(<span class="string">&quot;called Discriminant::from on an invalid value&quot;</span>)
 	}
-}
 
-<span class="comment">//impl&lt;T&gt; FromUsize for T</span>
-<span class="comment">//	where</span>
-<span class="comment">//		T: TryFrom&lt;usize, Error = TryFromIntError&gt;,</span>
-<span class="comment">//{</span>
-<span class="comment">//	fn from(n: usize) -&gt; Self {</span>
-<span class="comment">//		Self::try_from(n).unwrap()</span>
-<span class="comment">//	}</span>
-<span class="comment">//}</span>
-
-<span class="macro">macro_rules!</span> <span class="ident">impl_from_usize</span> {
-	($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span>: <span class="ident">ty</span>),<span class="kw-2">*</span>) =&gt; {
-		$(<span class="kw">impl</span> <span class="ident">FromUsize</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span> {
-			<span class="kw">const</span> <span class="ident">MAX</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
-			<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-				<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">n</span>).<span class="ident">ok</span>()
-			}
-		})<span class="op">*</span>
-	};
-}
-
-<span class="macro">impl_from_usize!</span>(<span class="ident">u8</span>, <span class="ident">i8</span>, <span class="ident">u16</span>, <span class="ident">i16</span>, <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">u64</span>, <span class="ident">i64</span>, <span class="ident">u128</span>, <span class="ident">i128</span>, <span class="ident">usize</span>, <span class="ident">isize</span>);
-
-<span class="doccomment">/// A trait for converting from a discriminant to [`usize`]. This is required for writing</span>
-<span class="doccomment">/// a parser using a [`ParserSpec`](super::ParserSpec).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// A type that implements both [`IntoUsize`] and [`Eq`] must ensure that the</span>
-<span class="doccomment">/// implementation of [`into`] must preserve and reflect equality, e.g.:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// use parse::IntoUsize;</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// fn test_eq&lt;T: Eq + IntoUsize&gt;(l: T, r: T) {</span>
-<span class="doccomment">/// 	let is_eq = &amp;l == &amp;r;</span>
-<span class="doccomment">/// 	let is_eq_int = l.into() == r.into();</span>
-<span class="doccomment">/// 	assert_eq!(is_eq, is_eq_int);	// l == r if and only if l.into() == r.into()</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Implementing both FromUsize and IntoUsize</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// If a type implements both [`FromUsize`] and [`IntoUsize`], it should ensure that</span>
-<span class="doccomment">/// [`from`] and [`into`] are isomorphisms. That is, calling [`from`] and then [`into`]</span>
-<span class="doccomment">/// should return the same number as the one you started with (or panic,) and calling</span>
-<span class="doccomment">/// [`into`] and then [`from`] should return an equivalent object to the original (or</span>
-<span class="doccomment">/// panic.) For example:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// use parse::{FromUsize, IntoUsize};</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// fn endo_t&lt;T: FromUsize + IntoUsize&gt;(t: T) -&gt; T {</span>
-<span class="doccomment">/// 	T::from(t.into())</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// fn endo_usize&lt;T: FromUsize + IntoUsize&gt;(n: usize) -&gt; usize {</span>
-<span class="doccomment">/// 	T::from(n).into()</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// assert_eq!(128u8, endo_t(128u8));</span>
-<span class="doccomment">/// assert_eq!(128, endo_usize::&lt;u8&gt;(128));</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// [`into`]: IntoUsize::into</span>
-<span class="doccomment">/// [`from`]: FromUsize::from</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoUsize</span> {
 	<span class="doccomment">/// Converts `self` into a [`usize`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// If `Self` implements both [`FromUsize`] and [`IntoUsize`], then this function</span>
-	<span class="doccomment">/// should always return [`Some`] on a value that can be generated by [`FromUsize`].</span>
+	<span class="doccomment">/// This function should always return [`Some`] on a value that can be generated by</span>
+	<span class="doccomment">/// [`from`](Self::from) or [`try_from`](Self::try_from).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```</span>
-	<span class="doccomment">/// use parse::{FromUsize, IntoUsize};</span>
+	<span class="doccomment">/// use parse::Discriminant;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let n = &lt;u8 as FromUsize&gt;::from(128);</span>
+	<span class="doccomment">/// let n = &lt;u8 as Discriminant&gt;::from(128);</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let result = &lt;u8 as IntoUsize&gt;::try_into(n);</span>
+	<span class="doccomment">/// let result = &lt;u8 as Discriminant&gt;::try_into(n);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// assert!(matches!(result, Some(_)));</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// See also the requirements</span>
-	<span class="doccomment">/// [here](IntoUsize#implementing-both-fromusize-and-intousize) for a type that</span>
-	<span class="doccomment">/// implements both [`FromUsize`] and [`IntoUsize`].</span>
+	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both </span>
+	<span class="doccomment">/// [`Discriminant`] and [`Eq`].</span>
 	<span class="kw">fn</span> <span class="ident">try_into</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="self">Self</span>: <span class="ident">Sized</span>;
 
-	<span class="doccomment">/// Equivalent to calling [`self.try_into().unwrap()`](IntoUsize::try_into).</span>
+	<span class="doccomment">/// Equivalent to calling [`self.try_into().unwrap()`](Discriminant::try_into).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panic</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Implementations should panic when [try_into](IntoUsize::try_into) would return</span>
+	<span class="doccomment">/// Implementations should panic when [try_into](Discriminant::try_into) would return</span>
 	<span class="doccomment">/// [`None`]. Otherwise, they should return the equivalent of calling</span>
 	<span class="doccomment">/// [`unwrap`](Option::unwrap) on [`self.try_into`].</span>
 	<span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) -&gt; <span class="ident">usize</span>
@@ -717,22 +555,19 @@
 		<span class="self">Self</span>: <span class="ident">Sized</span>,
 	{
 		<span class="self">self</span>.<span class="ident">try_into</span>()
-			.<span class="ident">expect</span>(<span class="string">&quot;called IntoUsize::into on an invalid value&quot;</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;called Discriminant::into on an invalid value&quot;</span>)
 	}
 }
 
-<span class="comment">//impl&lt;T&gt; IntoUsize for T</span>
-<span class="comment">//where</span>
-<span class="comment">//	T: TryInto&lt;usize, Error = TryFromIntError&gt;,</span>
-<span class="comment">//{</span>
-<span class="comment">//	fn into(self) -&gt; usize {</span>
-<span class="comment">//		self.try_into().unwrap()</span>
-<span class="comment">//	}</span>
-<span class="comment">//}</span>
-
-<span class="macro">macro_rules!</span> <span class="ident">impl_into_usize</span> {
+<span class="macro">macro_rules!</span> <span class="ident">impl_discriminant</span> {
 	($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span>: <span class="ident">ty</span>),<span class="kw-2">*</span>) =&gt; {
-		$(<span class="kw">impl</span> <span class="ident">IntoUsize</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span> {
+		$(<span class="kw">impl</span> <span class="ident">Discriminant</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span> {
+			<span class="kw">const</span> <span class="ident">MAX</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
+
+			<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+				<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">n</span>).<span class="ident">ok</span>()
+			}
+
 			<span class="kw">fn</span> <span class="ident">try_into</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
 				<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">TryInto</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_into</span>(<span class="self">self</span>).<span class="ident">ok</span>()
 			}
@@ -740,7 +575,7 @@
 	};
 }
 
-<span class="macro">impl_into_usize!</span>(<span class="ident">u8</span>, <span class="ident">i8</span>, <span class="ident">u16</span>, <span class="ident">i16</span>, <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">u64</span>, <span class="ident">i64</span>, <span class="ident">u128</span>, <span class="ident">i128</span>, <span class="ident">usize</span>, <span class="ident">isize</span>);
+<span class="macro">impl_discriminant!</span>(<span class="ident">u8</span>, <span class="ident">i8</span>, <span class="ident">u16</span>, <span class="ident">i16</span>, <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">u64</span>, <span class="ident">i64</span>, <span class="ident">u128</span>, <span class="ident">i128</span>, <span class="ident">usize</span>, <span class="ident">isize</span>);
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -752,7 +587,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="ident">RuleMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">non_terms</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">keys</span>().<span class="ident">copied</span>().<span class="ident">collect</span>();
-		<span class="macro">debug_assert!</span>(<span class="ident">non_terms</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="string">&quot;start&quot;</span>));
+		<span class="macro">debug_assert!</span>(<span class="ident">non_terms</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">START</span>));
 		<span class="ident">non_terms</span>.<span class="ident">sort_unstable</span>();
 		<span class="kw">let</span> <span class="ident">is_term</span> <span class="op">=</span> <span class="op">|</span><span class="ident">s</span>: <span class="op">&amp;&amp;</span><span class="ident">str</span><span class="op">|</span> <span class="op">!</span><span class="ident">non_terms</span>.<span class="ident">binary_search</span>(<span class="ident">s</span>).<span class="ident">is_ok</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">terms</span>: <span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">map</span>
@@ -763,28 +598,27 @@
 			.<span class="ident">copied</span>()           <span class="comment">//Item = &amp;str</span>
 			.<span class="ident">filter</span>(<span class="ident">is_term</span>)
 			.<span class="ident">collect</span>();
-		<span class="macro">debug_assert!</span>(<span class="op">!</span><span class="ident">terms</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="string">&quot;eof&quot;</span>));
-		<span class="ident">terms</span>.<span class="ident">insert</span>(<span class="string">&quot;eof&quot;</span>);
-		<span class="kw">let</span> <span class="ident">terms</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">terms</span>.<span class="ident">into_iter</span>().<span class="ident">collect</span>();
+		<span class="macro">assert!</span>(<span class="ident">terms</span>.<span class="ident">insert</span>(<span class="ident">EOF</span>));
+		<span class="kw">let</span> <span class="ident">terms</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">terms</span>.<span class="ident">iter</span>().<span class="ident">copied</span>().<span class="ident">collect</span>();
 		<span class="macro">debug_assert!</span>(<span class="ident">is_sorted</span>(<span class="kw-2">&amp;</span><span class="ident">terms</span>));
 		<span class="self">Self</span> { <span class="ident">non_terms</span>, <span class="ident">terms</span> }
 	}
 
 	<span class="comment">// Panics when the index of &#39;name&#39; in self.non_terms is greater than T::MAX</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">non_term_val</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FromUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">non_term_val</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="ident">search</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">non_terms</span>, <span class="ident">name</span>)
 	}
 
 	<span class="comment">// Panics when the index of &#39;name&#39; in self.terms is greater than T::MAX</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">term_val</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FromUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">term_val</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="ident">search</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">terms</span>, <span class="ident">name</span>)
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">non_term</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sym</span>: <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">non_term</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sym</span>: <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
 		<span class="self">self</span>.<span class="ident">non_terms</span>[<span class="ident">sym</span>.<span class="ident">into</span>()]
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">term</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sym</span>: <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">term</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sym</span>: <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
 		<span class="self">self</span>.<span class="ident">terms</span>[<span class="ident">sym</span>.<span class="ident">into</span>()]
 	}
 
@@ -796,19 +630,19 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">non_terms</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">is_valid_non_term_discrim</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">FromUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">is_valid_non_term_discrim</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
 		(<span class="self">self</span>.<span class="ident">non_terms</span>().<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">N::MAX</span>)
 			.<span class="ident">then</span>(<span class="op">|</span><span class="op">|</span> ())
 			.<span class="ident">ok_or</span>(<span class="ident">InvalidDiscriminant::NonTerm</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">is_valid_term_discrim</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FromUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">is_valid_term_discrim</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
 		(<span class="self">self</span>.<span class="ident">terms</span>().<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">T::MAX</span>)
 			.<span class="ident">then</span>(<span class="op">|</span><span class="op">|</span> ())
 			.<span class="ident">ok_or</span>(<span class="ident">InvalidDiscriminant::Term</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">are_valid_discrims</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">FromUsize</span>, <span class="ident">T</span>: <span class="ident">FromUsize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">are_valid_discrims</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">Discriminant</span>, <span class="ident">T</span>: <span class="ident">Discriminant</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">is_valid_non_term_discrim</span>::<span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>()
 			.<span class="ident">and_then</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">is_valid_term_discrim</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>())
 	}
@@ -816,8 +650,8 @@
 	<span class="kw">fn</span> <span class="ident">sym_vec</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="ident">I</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Symbol</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 		<span class="kw">for</span> <span class="ident">sym</span> <span class="kw">in</span> <span class="ident">iter</span> {
@@ -840,8 +674,8 @@
 		<span class="ident">rules</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">RuleMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">GrammarRules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">InvalidDiscriminant</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 	{
 		<span class="self">self</span>.<span class="ident">are_valid_discrims</span>::<span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">GrammarRules::new</span>(<span class="self">self</span>, <span class="ident">rules</span>).<span class="ident">unwrap</span>())
@@ -876,7 +710,7 @@
 <span class="kw">impl</span> <span class="ident">error::Error</span> <span class="kw">for</span> <span class="ident">InvalidDiscriminant</span> {}
 
 <span class="kw">mod</span> <span class="ident">grammar_rules</span> {
-	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">FromUsize</span>, <span class="ident">RuleMap</span>, <span class="ident">SymMap</span>};
+	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Discriminant</span>, <span class="ident">RuleMap</span>, <span class="ident">SymMap</span>};
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::grammar_rule_structures</span>::{<span class="ident">GrammarRule</span>, <span class="ident">Prim</span>};
 	<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::hash_map</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">slice</span>};
 
@@ -923,8 +757,8 @@
 
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">GrammarRules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 	{
 		<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">SymMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">rules</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">RuleMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">iter</span>();
@@ -942,8 +776,8 @@
 
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">GrammarRules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
-		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">FromUsize</span>,
+		<span class="ident">N</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
+		<span class="ident">T</span>: <span class="ident">Prim</span> <span class="op">+</span> <span class="ident">Discriminant</span>,
 	{
 		<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">GrammarRule</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
@@ -963,7 +797,7 @@
 <span class="comment">// Panics when the index of &#39;name&#39; is greater than T::MAX</span>
 <span class="kw">fn</span> <span class="ident">search</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">l</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>], <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">T</span>: <span class="ident">FromUsize</span>,
+	<span class="ident">T</span>: <span class="ident">Discriminant</span>,
 {
 	<span class="ident">l</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>).<span class="ident">ok</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">T::from</span>(<span class="ident">n</span>))
 }
@@ -995,7 +829,7 @@
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;
 
-start -&gt; Expr;
+Start -&gt; Expr;
 Expr -&gt; Fact ; 
 
 Fact -&gt; lparen Expr rparen
@@ -1016,9 +850,9 @@ Fact -&gt;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_impl_from_usize_max</span>() {
-		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::FromUsize</span>;
-		<span class="macro">assert_eq!</span>(<span class="op">&lt;</span><span class="ident">u128</span> <span class="kw">as</span> <span class="ident">FromUsize</span><span class="op">&gt;</span><span class="ident">::MAX</span>, <span class="ident">usize::MAX</span>);
-		<span class="macro">assert_eq!</span>(<span class="op">&lt;</span><span class="ident">i128</span> <span class="kw">as</span> <span class="ident">FromUsize</span><span class="op">&gt;</span><span class="ident">::MAX</span>, <span class="ident">usize::MAX</span>);
+		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Discriminant</span>;
+		<span class="macro">assert_eq!</span>(<span class="op">&lt;</span><span class="ident">u128</span> <span class="kw">as</span> <span class="ident">Discriminant</span><span class="op">&gt;</span><span class="ident">::MAX</span>, <span class="ident">usize::MAX</span>);
+		<span class="macro">assert_eq!</span>(<span class="op">&lt;</span><span class="ident">i128</span> <span class="kw">as</span> <span class="ident">Discriminant</span><span class="op">&gt;</span><span class="ident">::MAX</span>, <span class="ident">usize::MAX</span>);
 	}
 }
 </code></pre></div>

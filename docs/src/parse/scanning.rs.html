@@ -396,6 +396,48 @@
 <span id="395">395</span>
 <span id="396">396</span>
 <span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the Scanner struct, which is responsable for scanning strings and</span>
 <span class="comment">// generating a RuleMap (HashMap&lt;&amp;str, Vec&lt;Box&lt;[&amp;str]&gt;&gt;&gt;,) which is the first step in</span>
 <span class="comment">// generating a parser. The RuleMap is a mapping from left hand side non-terminal symbols</span>
@@ -406,8 +448,11 @@
 <span class="comment">// RULE ::= IDENT &#39;-&gt;&#39; IDENT+ &#39;;&#39;</span>
 <span class="comment">// Whitespace (including newlines) is ignored.</span>
 <span class="comment">//</span>
-<span class="comment">// &#39;start&#39; and &#39;eof&#39; are special identifiers. There must be exactly one rule with &#39;start&#39; as the left-hand-side and &#39;start&#39; cannot</span>
-<span class="comment">// appear on the right-hand-side of any rules. &#39;eof&#39; is reserved and cannot be used.</span>
+<span class="comment">// START and EOF are special identifiers. There must be exactly one rule with START as the</span>
+<span class="comment">// left-hand-side and START cannot appear on the right-hand-side of any rules. EOF is</span>
+<span class="comment">// reserved and cannot be used (EOF is now &#39;$&#39;, which is an invalid name anyway.)</span>
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::START</span>;
+
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">collections::HashMap</span>};
 
 <span class="kw">use</span> <span class="ident">regex</span>::{<span class="ident">Match</span>, <span class="ident">Regex</span>};
@@ -422,10 +467,11 @@
 <span class="comment">// might be more confusing at a glance</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">RuleMap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>]<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;^[[:alpha:]][0-9_[:alpha:]]*&quot;</span>;
+<span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r&quot;^[[:alpha:]]([0-9_[:alpha:]])*&quot;</span>;
 <span class="kw">const</span> <span class="ident">DIV</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;^-&gt;&quot;</span>;
 <span class="kw">const</span> <span class="ident">TERM</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;^;&quot;</span>;
-<span class="kw">const</span> <span class="ident">IGNORE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;^[[:space:]]+&quot;</span>;
+<span class="kw">const</span> <span class="ident">IGNORE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r&quot;^[[:space:]]+&quot;</span>;
+<span class="kw">const</span> <span class="ident">RESERVED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;^(crate)|(self)|(super)|(Self)$&quot;</span>;
 
 <span class="comment">// Scans its input &#39;inp&#39; to generate a RuleMap. name, div, term, and ignore are all</span>
 <span class="comment">// generated according to the constants above. The input is parsed using a kind of</span>
@@ -438,9 +484,11 @@
 	<span class="ident">div</span>: <span class="ident">Regex</span>,
 	<span class="ident">term</span>: <span class="ident">Regex</span>,
 	<span class="ident">ignore</span>: <span class="ident">Regex</span>,
+	<span class="ident">reserved</span>: <span class="ident">Regex</span>,
 }
 
 <span class="kw">mod</span> <span class="ident">error</span> {
+	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::START</span>;
 	<span class="kw">use</span> <span class="ident">rly_common::errors::ErrorData</span>;
 
 	<span class="kw">use</span> <span class="ident">std</span>::{
@@ -454,7 +502,7 @@
 	<span class="doccomment">/// contains an [`ErrorData`] that describes the location of the error.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// [^no_loc]: which is all of them except [`NoStart`](Self::NoStart), for sources that</span>
-	<span class="doccomment">/// lack a &quot;`start`&quot; rule, and [`EmptyInput`](Self::EmptyInput), for sources that are</span>
+	<span class="doccomment">/// lack a &quot;`Start`&quot; rule, and [`EmptyInput`](Self::EmptyInput), for sources that are</span>
 	<span class="doccomment">/// empty.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Example</span>
@@ -487,14 +535,16 @@
 		<span class="ident">MissingDiv</span>(<span class="ident">ErrorData</span>),
 		<span class="doccomment">/// A missing rule terminator &quot;`;`&quot;.</span>
 		<span class="ident">MissingTerm</span>(<span class="ident">ErrorData</span>),
-		<span class="doccomment">/// No rule for &quot;`start`&quot;.</span>
+		<span class="doccomment">/// No rule for &quot;`Start`&quot;.</span>
 		<span class="ident">NoStart</span>,
-		<span class="doccomment">/// Multiple rules for &quot;`start`&quot;.</span>
+		<span class="doccomment">/// Multiple rules for &quot;`Start`&quot;.</span>
 		<span class="ident">DuplicateStart</span>(<span class="ident">ErrorData</span>),
-		<span class="doccomment">/// Reserved identifier &quot;`eof`&quot; used.</span>
-		<span class="ident">EofUsed</span>(<span class="ident">ErrorData</span>),
+		<span class="doccomment">/// &quot;`Start`&quot; is used on the right-hand side of a rule.</span>
+		<span class="ident">StartRHS</span>(<span class="ident">ErrorData</span>),
 		<span class="doccomment">/// Source is empty.</span>
 		<span class="ident">EmptyInput</span>,
+		<span class="doccomment">/// A Rule with an empty right-hand side.</span>
+		<span class="ident">EmptyRHS</span>(<span class="ident">ErrorData</span>),
 	}
 
 	<span class="kw">impl</span> <span class="ident">SrcError</span> {
@@ -512,12 +562,12 @@
 			}
 			<span class="kw">let</span> <span class="ident">check_ident</span> <span class="op">=</span> <span class="op">|</span><span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">|</span> {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">mtch</span>) <span class="op">=</span> <span class="ident">ident</span>.<span class="ident">find</span>(<span class="ident">name</span>) {
-					(<span class="ident">mtch</span>.<span class="ident">end</span>() <span class="op">==</span> <span class="ident">name</span>.<span class="ident">len</span>()) <span class="op">&amp;&amp;</span> (<span class="ident">name</span> <span class="op">!</span><span class="op">=</span> <span class="string">&quot;eof&quot;</span>)
+					<span class="ident">mtch</span>.<span class="ident">end</span>() <span class="op">==</span> <span class="ident">name</span>.<span class="ident">len</span>()
 				} <span class="kw">else</span> {
 					<span class="bool-val">false</span>
 				}
 			};
-			<span class="kw">let</span> <span class="ident">_start</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">get</span>(<span class="string">&quot;start&quot;</span>)<span class="question-mark">?</span>;
+			<span class="macro">check!</span>(<span class="ident">rules</span>.<span class="ident">get</span>(<span class="ident">START</span>)<span class="question-mark">?</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span>);
 			<span class="kw">for</span> <span class="ident">key</span> <span class="kw">in</span> <span class="ident">rules</span>.<span class="ident">keys</span>() {
 				<span class="macro">check!</span>(<span class="ident">check_ident</span>(<span class="ident">key</span>));
 				<span class="kw">let</span> <span class="ident">rhss</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">unwrap</span>();
@@ -526,6 +576,7 @@
 					<span class="macro">check!</span>(<span class="ident">rhs</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
 					<span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">rhs</span>.<span class="ident">iter</span>() {
 						<span class="macro">check!</span>(<span class="ident">check_ident</span>(<span class="ident">name</span>));
+						<span class="macro">check!</span>(<span class="kw-2">*</span><span class="ident">name</span> <span class="op">!</span><span class="op">=</span> <span class="ident">START</span>);
 					}
 				}
 			}
@@ -536,7 +587,7 @@
 	<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">SrcError</span> {
 		<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span> {
 			<span class="kw">use</span> <span class="ident">SrcError</span>::<span class="kw-2">*</span>;
-			<span class="kw">let</span> <span class="ident">write</span> <span class="op">=</span> <span class="op">|</span><span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">mssg</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="ident">ErrorData</span><span class="op">|</span> {
+			<span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Display</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">mssg</span>: <span class="ident">T</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="ident">ErrorData</span>) -&gt; <span class="prelude-ty">Result</span> {
 				<span class="macro">write!</span>(
 					<span class="ident">f</span>,
 					<span class="string">&quot;Syntax error on line {}: {}\n{}&quot;</span>,
@@ -544,15 +595,18 @@
 					<span class="ident">mssg</span>,
 					<span class="ident">data</span>.<span class="ident">line_offset</span>()
 				)
-			};
-			<span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="op">|</span><span class="ident">mssg</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">|</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Syntax error: {}&quot;</span>, <span class="ident">mssg</span>);
+			}
+			<span class="kw">fn</span> <span class="ident">wnd</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Display</span><span class="op">&gt;</span>(<span class="ident">mssg</span>: <span class="ident">T</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span> {
+				<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Syntax error: {}&quot;</span>, <span class="ident">mssg</span>)
+			}
 			<span class="kw">match</span> <span class="self">self</span> {
 				<span class="ident">InvalidIdent</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Not a valid identifier.&quot;</span>, <span class="ident">data</span>),
 				<span class="ident">MissingDiv</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Missing &#39;-&gt;&#39;&quot;</span>, <span class="ident">data</span>),
 				<span class="ident">MissingTerm</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Missing closing &#39;;&#39;&quot;</span>, <span class="ident">data</span>),
-				<span class="ident">DuplicateStart</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Only one rule for &#39;start&#39; allowed&quot;</span>, <span class="ident">data</span>),
-				<span class="ident">EofUsed</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;&#39;eof&#39; is a reserved value&quot;</span>, <span class="ident">data</span>),
-				<span class="ident">NoStart</span> =&gt; <span class="ident">wnd</span>(<span class="string">&quot;Must have a rule for &#39;start&#39;&quot;</span>, <span class="ident">f</span>),
+				<span class="ident">DuplicateStart</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="macro">format_args!</span>(<span class="string">&quot;Only one rule for &#39;{}&#39; allowed&quot;</span>, <span class="ident">START</span>), <span class="ident">data</span>),
+				<span class="ident">StartRHS</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="macro">format_args!</span>(<span class="string">&quot;&#39;{}&#39; cannot be used on the right-hand side of a rule&quot;</span>, <span class="ident">START</span>), <span class="ident">data</span>),
+				<span class="ident">EmptyRHS</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Rules cannot have an empty right-hand side&quot;</span>, <span class="ident">data</span>),
+				<span class="ident">NoStart</span> =&gt; <span class="ident">wnd</span>(<span class="macro">format_args!</span>(<span class="string">&quot;Must have a rule for &#39;{}&#39;&quot;</span>, <span class="ident">START</span>), <span class="ident">f</span>),
 				<span class="ident">EmptyInput</span> =&gt; <span class="ident">wnd</span>(<span class="string">&quot;Input is empty&quot;</span>, <span class="ident">f</span>),
 			}
 		}
@@ -575,6 +629,7 @@
 			<span class="ident">div</span>: <span class="ident">Regex::new</span>(<span class="ident">DIV</span>).<span class="ident">unwrap</span>(),
 			<span class="ident">term</span>: <span class="ident">Regex::new</span>(<span class="ident">TERM</span>).<span class="ident">unwrap</span>(),
 			<span class="ident">ignore</span>: <span class="ident">Regex::new</span>(<span class="ident">IGNORE</span>).<span class="ident">unwrap</span>(),
+			<span class="ident">reserved</span>: <span class="ident">Regex::new</span>(<span class="ident">RESERVED</span>).<span class="ident">unwrap</span>(),
 		}
 	}
 
@@ -594,6 +649,10 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ignore</span>
 	}
 
+	<span class="kw">fn</span> <span class="ident">reserved</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Regex</span> {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">reserved</span>
+	}
+
 	<span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Regex</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Match</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="ident">reg</span>.<span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inp</span>[<span class="self">self</span>.<span class="ident">pos</span>..])
 	}
@@ -602,11 +661,26 @@
 		<span class="self">self</span>.<span class="ident">find</span>(<span class="self">self</span>.<span class="ident">ignore</span>())
 	}
 
+	<span class="kw">fn</span> <span class="ident">check_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">reserved</span>().<span class="ident">is_match</span>(<span class="ident">s</span>) {
+			<span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::InvalidIdent</span>))
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Ok</span>(())
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">check_is_start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="ident">s</span> <span class="op">==</span> <span class="ident">START</span> {
+			<span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::StartRHS</span>))
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Ok</span>(())
+		}
+	}
+
 	<span class="kw">fn</span> <span class="ident">find_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Match</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="self">self</span>.<span class="ident">name</span>()) {
-			<span class="prelude-val">Some</span>(<span class="ident">rmatch</span>) <span class="kw">if</span> <span class="ident">rmatch</span>.<span class="ident">as_str</span>() <span class="op">!</span><span class="op">=</span> <span class="string">&quot;eof&quot;</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">rmatch</span>),
+			<span class="prelude-val">Some</span>(<span class="ident">rmatch</span>)  =&gt; <span class="prelude-val">Ok</span>(<span class="ident">rmatch</span>),
 			<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::InvalidIdent</span>)),
-			<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::EofUsed</span>)),
 		}
 	}
 
@@ -629,7 +703,8 @@
 	<span class="kw">fn</span> <span class="ident">expect_lhs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">rmatch</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">find_name</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">rmatch</span>.<span class="ident">as_str</span>();
-		<span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="string">&quot;start&quot;</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">rules</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>) {
+		<span class="self">self</span>.<span class="ident">check_name</span>(<span class="ident">name</span>)<span class="question-mark">?</span>;
+		<span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">START</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">rules</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>) {
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::DuplicateStart</span>));
 		};
 		<span class="self">self</span>.<span class="ident">update</span>(<span class="ident">rmatch</span>);
@@ -640,7 +715,14 @@
 		<span class="self">self</span>.<span class="ident">expect_none</span>();
 		<span class="kw">let</span> <span class="ident">rmatch</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">find_div</span>()<span class="question-mark">?</span>;
 		<span class="self">self</span>.<span class="ident">update</span>(<span class="ident">rmatch</span>);
-		<span class="prelude-val">Ok</span>(())
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pos</span>;
+		<span class="self">self</span>.<span class="ident">expect_none</span>();
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">term</span>().<span class="ident">is_match</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inp</span>[<span class="self">self</span>.<span class="ident">pos</span>..]) {
+			<span class="self">self</span>.<span class="ident">pos</span> <span class="op">=</span> <span class="ident">n</span>;
+			<span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::EmptyRHS</span>))
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Ok</span>(())
+		}
 	}
 
 	<span class="comment">// Parses a single symbol on the right-hand-side of a production rule. If no symbols</span>
@@ -648,8 +730,11 @@
 	<span class="kw">fn</span> <span class="ident">expect_rhs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">expect_none</span>();
 		<span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">rmatch</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="self">self</span>.<span class="ident">name</span>()) {
+			<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">rmatch</span>.<span class="ident">as_str</span>();
+			<span class="self">self</span>.<span class="ident">check_name</span>(<span class="ident">name</span>)<span class="question-mark">?</span>;
+			<span class="self">self</span>.<span class="ident">check_is_start</span>(<span class="ident">name</span>)<span class="question-mark">?</span>;
 			<span class="self">self</span>.<span class="ident">update</span>(<span class="ident">rmatch</span>);
-			<span class="prelude-val">Some</span>(<span class="ident">rmatch</span>.<span class="ident">as_str</span>())
+			<span class="prelude-val">Some</span>(<span class="ident">name</span>)
 		} <span class="kw">else</span> {
 			<span class="self">self</span>.<span class="ident">expect_term</span>()<span class="question-mark">?</span>;
 			<span class="prelude-val">None</span>
@@ -686,7 +771,7 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">check_has_start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">rules</span>.<span class="ident">contains_key</span>(<span class="string">&quot;start&quot;</span>) {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">rules</span>.<span class="ident">contains_key</span>(<span class="ident">START</span>) {
 			<span class="prelude-val">Err</span>(<span class="ident">SrcError::NoStart</span>)
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Ok</span>(())
@@ -704,7 +789,6 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">find_err</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ErrorData</span> {
-		<span class="macro">println!</span>(<span class="string">&quot;{} {}&quot;</span>, <span class="self">self</span>.<span class="ident">inp</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">pos</span>);
 		<span class="ident">ErrorData::find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inp</span>, <span class="self">self</span>.<span class="ident">pos</span>).<span class="ident">unwrap</span>()
 	}
 
@@ -744,7 +828,7 @@
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;
 
-start -&gt; Expr;
+Start -&gt; Expr;
 Expr -&gt; Fact ; 
 
 Fact -&gt; lparen Expr rparen
@@ -773,7 +857,7 @@ Fact -&gt;
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC_ERR</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;
 
-start -&gt; Expr;
+Start -&gt; Expr;
 Expr -&gt; Fact ; 
 
 lparen Expr rparen
