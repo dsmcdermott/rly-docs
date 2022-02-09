@@ -1315,7 +1315,7 @@
 		<span class="prelude-val">Ok</span>(<span class="kw">for</span> (<span class="ident">term</span>, <span class="ident">goto</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">iter</span>().<span class="ident">copied</span>() {
 			<span class="macro">write!</span>(
 				<span class="ident">f</span>,
-				<span class="string">&quot;Some(TokenKind::T_{term}) =&gt; {{ let la = self.shift()?.unwrap(); self.s{goto}(AstNode::Leaf(la)) }}\n\t\t\t\t&quot;</span>,
+				<span class="string">&quot;Some(TokenKind::r#{term}) =&gt; {{ let la = self.shift()?.unwrap(); self.s{goto}(AstNode::Leaf(la)) }}\n\t\t\t\t&quot;</span>,
 				<span class="ident">term</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">term</span>(<span class="ident">term</span>),
 				<span class="ident">goto</span> <span class="op">=</span> <span class="ident">goto</span>
 			)<span class="question-mark">?</span>;
@@ -1348,7 +1348,7 @@
 				<span class="ident">write</span>(<span class="macro">format_args!</span>(<span class="string">&quot;None&quot;</span>), <span class="ident">lhs</span>, <span class="ident">n</span>)<span class="question-mark">?</span>;
 			} <span class="kw">else</span> {
 				<span class="ident">write</span>(
-					<span class="macro">format_args!</span>(<span class="string">&quot;Some(TokenKind::T_{})&quot;</span>, <span class="self">self</span>.<span class="number">0</span>.<span class="ident">map</span>().<span class="ident">term</span>(<span class="kw-2">*</span><span class="ident">la</span>)),
+					<span class="macro">format_args!</span>(<span class="string">&quot;Some(TokenKind::r#{})&quot;</span>, <span class="self">self</span>.<span class="number">0</span>.<span class="ident">map</span>().<span class="ident">term</span>(<span class="kw-2">*</span><span class="ident">la</span>)),
 					<span class="ident">lhs</span>,
 					<span class="ident">n</span>,
 				)<span class="question-mark">?</span>;

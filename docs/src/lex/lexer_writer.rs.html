@@ -482,7 +482,7 @@
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="kw">for</span> <span class="ident">pair</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">rules</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">rule</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_user_rule</span>(<span class="ident">pair</span>) {
-				<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tT_{name},\n\t&quot;</span>, <span class="ident">name</span> <span class="op">=</span> <span class="ident">rule</span>.<span class="ident">name</span>())<span class="question-mark">?</span>;
+				<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\tr#{name},\n\t&quot;</span>, <span class="ident">name</span> <span class="op">=</span> <span class="ident">rule</span>.<span class="ident">name</span>())<span class="question-mark">?</span>;
 			};
 		}
 		<span class="prelude-val">Ok</span>(())
@@ -497,7 +497,7 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">rule</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_user_rule</span>(<span class="ident">pair</span>) {
 				<span class="macro">write!</span>(
 					<span class="ident">f</span>,
-					<span class="string">&quot;\tTokenKind::T_{name} =&gt; write!(f, {name:?}),\n\t\t\t\t&quot;</span>,
+					<span class="string">&quot;\tTokenKind::r#{name} =&gt; write!(f, {name:?}),\n\t\t\t\t&quot;</span>,
 					<span class="ident">name</span> <span class="op">=</span> <span class="ident">rule</span>.<span class="ident">name</span>()
 				)<span class="question-mark">?</span>;
 			};
@@ -512,7 +512,7 @@
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">FmtResult</span> {
 		<span class="kw">for</span> <span class="ident">pair</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">rules</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_user_rule</span>(<span class="ident">pair</span>) {
-				<span class="prelude-val">Some</span>(<span class="ident">rule</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot; Some(TokenKind::T_{}),&quot;</span>, <span class="ident">rule</span>.<span class="ident">name</span>()),
+				<span class="prelude-val">Some</span>(<span class="ident">rule</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot; Some(TokenKind::r#{}),&quot;</span>, <span class="ident">rule</span>.<span class="ident">name</span>()),
 				<span class="prelude-val">None</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot; None,&quot;</span>),
 			}<span class="question-mark">?</span>;
 		}

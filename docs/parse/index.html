@@ -262,8 +262,8 @@ symbols, particularly for use in <a href="lex/struct.Token.html"><code>Token</co
 well.</p>
 <p>The only assumption made by a <a href="index.html#parser-stucture">parser module</a> about its environment, aside from
 having this crate available, is that there is a sister module called <code>lexer</code>,
-containing an enumeration called <code>TokenKind</code>, whose variants are <code>T_&lt;sym&gt;</code> for each
-terminal symbol <code>&lt;sym&gt;</code> of the language.</p>
+containing an enumeration called <code>TokenKind</code>, whose variants are <code>TokenKind::&lt;sym&gt;</code>
+for each terminal symbol <code>&lt;sym&gt;</code> of the language.</p>
 <p><code>TokenKind</code> is imported into the module and used as the type discriminant for
 <a href="lex/struct.Token.html"><code>Token</code></a>’s, (as returned by <a href="lex/struct.Token.html#method.kind"><code>Token::kind</code></a>.)</p>
 <p>What this means, if you’re using the crate <code>lex</code> to generate your lexer, is that you
@@ -520,7 +520,7 @@ value for that branch node under the previous branch node.</p>
 
 	<span class="comment">// if leaf is an &#39;int&#39;, parses the underlying str as a u32 and pushes it</span>
 	<span class="kw">fn</span> <span class="ident">on_leaf</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">leaf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Token</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">leaf</span>.<span class="ident">kind</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">TokenKind::T_int</span> {
+		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">leaf</span>.<span class="ident">kind</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">TokenKind::int</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		};
 		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">val</span>().<span class="ident">parse</span>().<span class="ident">unwrap</span>();
