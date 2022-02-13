@@ -769,25 +769,6 @@
 <span id="768">768</span>
 <span id="769">769</span>
 <span id="770">770</span>
-<span id="771">771</span>
-<span id="772">772</span>
-<span id="773">773</span>
-<span id="774">774</span>
-<span id="775">775</span>
-<span id="776">776</span>
-<span id="777">777</span>
-<span id="778">778</span>
-<span id="779">779</span>
-<span id="780">780</span>
-<span id="781">781</span>
-<span id="782">782</span>
-<span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
-<span id="789">789</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains code for writing a parser from a grammar rule specification.</span>
 <span class="comment">// &#39;Rules&#39; represents a set of grammar or production rules, and ParserSpec represents a</span>
 <span class="comment">// set of generated tables for a LR(1) parser. Rules&#39; contain references to the source</span>
@@ -800,14 +781,13 @@
 <span class="comment">// implement Display by writing out their data as the correctly formatted components.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">START</span>,
-	<span class="ident">EOF</span>,
 	<span class="ident">error::ParserError</span>,
 	<span class="ident">grammar_rule_structures::Prim</span>,
 	<span class="ident">grammar_rules::GrammarRules</span>,
 	<span class="ident">scanning</span>::{<span class="ident">Scanner</span>, <span class="ident">SrcError</span>},
 	<span class="ident">sym_map</span>::{<span class="ident">Discriminant</span>, <span class="ident">InvalidDiscriminant</span>, <span class="ident">SymMap</span>},
 	<span class="ident">table_construction::Table</span>,
+	<span class="ident">EOF</span>, <span class="ident">START</span>,
 };
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections::HashMap</span>,
@@ -1233,24 +1213,6 @@
 		<span class="macro">write!</span>(<span class="ident">fout</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">display</span>())
 	}
 }
-
-<span class="comment">//pub fn write_from_rules&lt;&#39;a, &#39;b, N, T, W&gt;(rules: &amp;&#39;b Rules&lt;&#39;a, N, T&gt;, fout: W) -&gt; io::Result&lt;()&gt;</span>
-<span class="comment">//where</span>
-<span class="comment">//	N: Prim + Discriminant,</span>
-<span class="comment">//	T: Prim + Discriminant,</span>
-<span class="comment">//	W: Write,</span>
-<span class="comment">//{</span>
-<span class="comment">//	ParserSpec::new(rules).write(fout)</span>
-<span class="comment">//}</span>
-
-<span class="comment">//pub fn write_from_rule_map&lt;&#39;a, N, T, W&gt;(map: &amp;HashMap&lt;&amp;&#39;a str, Vec&lt;Box&lt;[&amp;&#39;a str]&gt;&gt;&gt;, fout: W) -&gt; io::Result&lt;()&gt;</span>
-<span class="comment">//where</span>
-<span class="comment">//	N: Prim + Discriminant,</span>
-<span class="comment">//	T: Prim + Discriminant,</span>
-<span class="comment">//	W: Write,</span>
-<span class="comment">//{</span>
-<span class="comment">//	Rules::&lt;&#39;a, N, T&gt;::from_rule_map(map).gen_spec().write(fout)</span>
-<span class="comment">//}</span>
 
 <span class="doccomment">/// Parses the grammar specification in `src` and writes a parser module to `fout`.</span>
 <span class="doccomment">///</span>

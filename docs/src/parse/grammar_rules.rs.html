@@ -262,61 +262,6 @@
 <span id="261">261</span>
 <span id="262">262</span>
 <span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the GrammarRules struct, which is responsable for storing and</span>
 <span class="comment">// organising information about the rules of a particular grammar for use in building</span>
 <span class="comment">// parser tables. In particular it provides the right-hand-sides of a given non-terminal</span>
@@ -450,61 +395,6 @@
 		<span class="self">self</span>.<span class="ident">table_builder</span>().<span class="ident">return_tables</span>()
 	}
 }
-
-<span class="comment">//#[cfg(test)]</span>
-<span class="comment">//mod iter_items {</span>
-<span class="comment">//	use std::{</span>
-<span class="comment">//		collections::hash_map::{Keys, HashMap},</span>
-<span class="comment">//		slice::Iter,</span>
-<span class="comment">//		ops::Deref,</span>
-<span class="comment">//	};</span>
-<span class="comment">//	use super::{</span>
-<span class="comment">//		Symbol,</span>
-<span class="comment">//		GrammarRules,</span>
-<span class="comment">//		Prim,</span>
-<span class="comment">//	};</span>
-<span class="comment">//	use crate::grammar_rule_structures::BasicItem;</span>
-<span class="comment">//</span>
-<span class="comment">//	type Val&lt;N, T&gt; = Box&lt;[Symbol&lt;N, T&gt;]&gt;;</span>
-<span class="comment">//	type Vals&lt;N, T&gt; = Vec&lt;Val&lt;N, T&gt;&gt;;</span>
-<span class="comment">//</span>
-<span class="comment">//	pub struct BasicItems&lt;&#39;a, N: Prim, T: Prim&gt; {</span>
-<span class="comment">//		rules: &amp;&#39;a HashMap&lt;N, Vals&lt;N, T&gt;&gt;,</span>
-<span class="comment">//		keys: Keys&lt;&#39;a, N, Vals&lt;N, T&gt;&gt;,</span>
-<span class="comment">//		current: &amp;&#39;a N,</span>
-<span class="comment">//		iter: Iter&lt;&#39;a, Val&lt;N, T&gt;&gt;,</span>
-<span class="comment">//	}</span>
-<span class="comment">//</span>
-<span class="comment">//	impl&lt;&#39;a, N: Prim, T: Prim&gt; BasicItems&lt;&#39;a, N, T&gt; {</span>
-<span class="comment">//</span>
-<span class="comment">//		//	Will panic if the rules are empty</span>
-<span class="comment">//		pub(super) fn new(rules: &amp;&#39;a GrammarRules&lt;N, T&gt;) -&gt; Self {</span>
-<span class="comment">//			let rules = &amp;rules.rules;</span>
-<span class="comment">//			let mut keys = rules.keys();</span>
-<span class="comment">//			let current = keys.next().unwrap();</span>
-<span class="comment">//			let iter = rules.get(current).unwrap().iter();</span>
-<span class="comment">//			Self { rules, keys, current, iter }</span>
-<span class="comment">//		}</span>
-<span class="comment">//	}</span>
-<span class="comment">//</span>
-<span class="comment">//	impl&lt;&#39;a, N: Prim, T: Prim&gt; Iterator for BasicItems&lt;&#39;a, N, T&gt; {</span>
-<span class="comment">//		type Item = BasicItem&lt;&#39;a, N, T&gt;;</span>
-<span class="comment">//</span>
-<span class="comment">//		fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {</span>
-<span class="comment">//			match self.iter.next() {</span>
-<span class="comment">//				Some(rhs) =&gt; Some(BasicItem::new(*self.current, rhs.deref())),</span>
-<span class="comment">//				None =&gt; {</span>
-<span class="comment">//					self.current = self.keys.next()?;</span>
-<span class="comment">//					self.iter = self.rules.get(self.current).unwrap().iter();</span>
-<span class="comment">//					self.next()</span>
-<span class="comment">//				},</span>
-<span class="comment">//			}</span>
-<span class="comment">//		}</span>
-<span class="comment">//	}</span>
-<span class="comment">//}</span>
-
-<span class="comment">//#[cfg(test)]</span>
-<span class="comment">//pub use iter_items::BasicItems;</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tests</span> {

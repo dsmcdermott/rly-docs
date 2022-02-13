@@ -615,6 +615,9 @@
 <span id="614">614</span>
 <span id="615">615</span>
 <span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and traits for working with (abstract) syntax trees.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This includes the enum [`AstNode`] and the struct [`Ast`], as well as traits such as</span>
@@ -704,6 +707,9 @@
 <span class="doccomment">//! * For [`Walker`], the borrowing walking trait, the method [`exit`](Walker::exit) takes</span>
 <span class="doccomment">//! a reference to the branch node as a whole, while the other two traits only act on the</span>
 <span class="doccomment">//! [`label`] of the branch being exited.</span>
+<span class="comment">//</span>
+<span class="comment">//  TODO: Add a summary of the iterator types for Ast, and show how they can be</span>
+<span class="comment">//  implemented using the walking tools introduced above.</span>
 <span class="comment">//</span>
 <span class="comment">//  # Iterating Over an `Ast`</span>
 <span class="comment">//</span>

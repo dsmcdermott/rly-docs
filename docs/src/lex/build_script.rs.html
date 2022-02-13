@@ -386,56 +386,6 @@
 <span id="385">385</span>
 <span id="386">386</span>
 <span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
-<span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
 </pre><pre class="rust"><code><span class="comment">// A module containing helper code for build scripts that create lexers, as well as the</span>
 <span class="comment">// `lexer` macro which can be used to include the lexer in a src file. The `LexerBuilder`</span>
 <span class="comment">// struct is just a thin wrapper around the more general `BuilderBase` struct found in</span>
@@ -813,56 +763,6 @@
 <span class="doccomment">/// 	//</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
-
-<span class="comment">//	# Example</span>
-<span class="comment">//</span>
-<span class="comment">//	In `build.rs`</span>
-<span class="comment">//</span>
-<span class="comment">//	``` no_run</span>
-<span class="comment">//	use lex::{LexerBuilder, LexerBuilderError};</span>
-<span class="comment">//</span>
-<span class="comment">//	fn main() -&gt; Result&lt;(), LexerBuilderError&gt; {</span>
-<span class="comment">//</span>
-<span class="comment">//		lex::build_lexer()?										// Builds a lexer with default values.</span>
-<span class="comment">//</span>
-<span class="comment">//		let mut alt_builder = LexerBuilder::new().unwrap();</span>
-<span class="comment">//		alt_builder.with_name(&quot;alt_lexer&quot;).unwrap().build()?;	// Builds an alternative lexer with the name &#39;alt_lexer&#39;.</span>
-<span class="comment">//		Ok(())</span>
-<span class="comment">//	}</span>
-<span class="comment">//	```</span>
-<span class="comment">//</span>
-<span class="comment">//	In `src/main.rs`</span>
-<span class="comment">//</span>
-<span class="comment">//	``` ignore</span>
-<span class="comment">//	use std::{</span>
-<span class="comment">//		env,</span>
-<span class="comment">//		fs::File,</span>
-<span class="comment">//		ffi::OsString,</span>
-<span class="comment">//		io::Read};</span>
-<span class="comment">//</span>
-<span class="comment">//	use lex::{self, Lexer};</span>
-<span class="comment">//</span>
-<span class="comment">//	lex::lexer!();</span>
-<span class="comment">//</span>
-<span class="comment">//	mod alt_lexer {</span>
-<span class="comment">//		lex::lexer!(&quot;alt_lexer&quot;);</span>
-<span class="comment">//		pub use lexer::*;</span>
-<span class="comment">//	}</span>
-<span class="comment">//</span>
-<span class="comment">//	fn process_arg(arg: OsString) {</span>
-<span class="comment">//		let mut src = String::new();</span>
-<span class="comment">//</span>
-<span class="comment">//		File::open(arg)</span>
-<span class="comment">//			.and_then(|file| file.read_to_string(&amp;mut src))</span>
-<span class="comment">//			.expect(&quot;unable to open file&quot;);</span>
-<span class="comment">//</span>
-<span class="comment">//		let mut tokens = Vec::new();</span>
-<span class="comment">//</span>
-<span class="comment">//		let lexer =</span>
-<span class="comment">//</span>
-<span class="comment">//		for token in lexer::LexerRules::new</span>
-<span class="comment">//</span>
-<span class="comment">//	fn main() {</span>
 
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">lexer</span> {

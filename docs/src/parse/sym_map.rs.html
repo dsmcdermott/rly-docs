@@ -426,7 +426,6 @@
 <span id="425">425</span>
 <span id="426">426</span>
 <span id="427">427</span>
-<span id="428">428</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the struct SymMap, which is responsable for defining and</span>
 <span class="comment">// processing the mapping between discriminants for terminal and non-terminal symbols and</span>
 <span class="comment">// the str representations of those symbols.</span>
@@ -448,10 +447,9 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">EOF</span>,
-	<span class="ident">START</span>,
 	<span class="ident">grammar_rule_structures</span>::{<span class="ident">Prim</span>, <span class="ident">Symbol</span>},
 	<span class="ident">scanning::RuleMap</span>,
+	<span class="ident">EOF</span>, <span class="ident">START</span>,
 };
 
 <span class="doccomment">/// A trait for [discriminant types].</span>
@@ -502,7 +500,7 @@
 	<span class="doccomment">/// assert!(matches!(some, Some(255)));</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both </span>
+	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both</span>
 	<span class="doccomment">/// [`Discriminant`] and [`Eq`].</span>
 	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
@@ -537,7 +535,7 @@
 	<span class="doccomment">/// assert!(matches!(result, Some(_)));</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both </span>
+	<span class="doccomment">/// See also the [requirements](Discriminant) for a type that implements both</span>
 	<span class="doccomment">/// [`Discriminant`] and [`Eq`].</span>
 	<span class="kw">fn</span> <span class="ident">try_into</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
 	<span class="kw">where</span>

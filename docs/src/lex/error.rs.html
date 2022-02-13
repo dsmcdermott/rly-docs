@@ -177,15 +177,6 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
 </pre><pre class="rust"><code><span class="comment">// This module defines the `LexerBuilderError`type which is a generic type for errors encountered when creating lexers.</span>
 <span class="kw">use</span> <span class="ident">regex::Error</span> <span class="kw">as</span> <span class="ident">RError</span>;
 <span class="kw">use</span> <span class="ident">rly_common::builders</span>;
@@ -195,8 +186,6 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// A type for syntax errors in Lexer definitions.</span>
-<span class="comment">//</span>
-<span class="comment">// `val` is an errormessage indicating the nature of the error, and `line` indicates which line of the source the error occured on.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FmtError</span> {
 	<span class="ident">val</span>: <span class="ident">String</span>,
 }
@@ -213,13 +202,7 @@
 	}
 }
 
-<span class="comment">//impl Display for FmtError {</span>
-<span class="comment">//	fn fmt(&amp;self, f: &amp;mut Formatter&lt;&#39;_&gt;) -&gt; Result {</span>
-<span class="comment">//		write!(f, &quot;Invalid lexer syntax on line {}: {}&quot;, self.line, &amp;self.val)</span>
-<span class="comment">//	}</span>
-<span class="comment">//}</span>
-<span class="comment">//</span>
-<span class="comment">//impl error::Error for FmtError {}</span>
+<span class="kw">impl</span> <span class="ident">error::Error</span> <span class="kw">for</span> <span class="ident">FmtError</span> {}
 
 <span class="doccomment">/// The different kinds of [`LexerError`]&#39;s.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -249,7 +232,6 @@
 <span class="doccomment">/// Its methods can be used to determine the [kind](LexerErrorKind) of error, which line</span>
 <span class="doccomment">/// number it occured on, and what the contents of that line were.</span>
 
-<span class="comment">//pub struct Error(ErrorKind);</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LexerError</span> {
 	<span class="ident">kind</span>: <span class="ident">LexerErrorKind</span>,
 	<span class="ident">lineno</span>: <span class="ident">usize</span>,

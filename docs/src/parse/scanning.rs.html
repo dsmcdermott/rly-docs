@@ -437,7 +437,6 @@
 <span id="436">436</span>
 <span id="437">437</span>
 <span id="438">438</span>
-<span id="439">439</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the Scanner struct, which is responsable for scanning strings and</span>
 <span class="comment">// generating a RuleMap (HashMap&lt;&amp;str, Vec&lt;Box&lt;[&amp;str]&gt;&gt;&gt;,) which is the first step in</span>
 <span class="comment">// generating a parser. The RuleMap is a mapping from left hand side non-terminal symbols</span>
@@ -450,7 +449,7 @@
 <span class="comment">//</span>
 <span class="comment">// START and EOF are special identifiers. There must be exactly one rule with START as the</span>
 <span class="comment">// left-hand-side and START cannot appear on the right-hand-side of any rules. EOF is</span>
-<span class="comment">// reserved and cannot be used (EOF is now &#39;$&#39;, which is an invalid name anyway.)</span>
+<span class="comment">// reserved and cannot be used (EOF is currently &#39;$&#39;, which is an invalid name anyway.)</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::START</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">collections::HashMap</span>};
@@ -603,8 +602,19 @@
 				<span class="ident">InvalidIdent</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Not a valid identifier.&quot;</span>, <span class="ident">data</span>),
 				<span class="ident">MissingDiv</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Missing &#39;-&gt;&#39;&quot;</span>, <span class="ident">data</span>),
 				<span class="ident">MissingTerm</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Missing closing &#39;;&#39;&quot;</span>, <span class="ident">data</span>),
-				<span class="ident">DuplicateStart</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="macro">format_args!</span>(<span class="string">&quot;Only one rule for &#39;{}&#39; allowed&quot;</span>, <span class="ident">START</span>), <span class="ident">data</span>),
-				<span class="ident">StartRHS</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="macro">format_args!</span>(<span class="string">&quot;&#39;{}&#39; cannot be used on the right-hand side of a rule&quot;</span>, <span class="ident">START</span>), <span class="ident">data</span>),
+				<span class="ident">DuplicateStart</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(
+					<span class="ident">f</span>,
+					<span class="macro">format_args!</span>(<span class="string">&quot;Only one rule for &#39;{}&#39; allowed&quot;</span>, <span class="ident">START</span>),
+					<span class="ident">data</span>,
+				),
+				<span class="ident">StartRHS</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(
+					<span class="ident">f</span>,
+					<span class="macro">format_args!</span>(
+						<span class="string">&quot;&#39;{}&#39; cannot be used on the right-hand side of a rule&quot;</span>,
+						<span class="ident">START</span>
+					),
+					<span class="ident">data</span>,
+				),
 				<span class="ident">EmptyRHS</span>(<span class="ident">data</span>) =&gt; <span class="ident">write</span>(<span class="ident">f</span>, <span class="string">&quot;Rules cannot have an empty right-hand side&quot;</span>, <span class="ident">data</span>),
 				<span class="ident">NoStart</span> =&gt; <span class="ident">wnd</span>(<span class="macro">format_args!</span>(<span class="string">&quot;Must have a rule for &#39;{}&#39;&quot;</span>, <span class="ident">START</span>), <span class="ident">f</span>),
 				<span class="ident">EmptyInput</span> =&gt; <span class="ident">wnd</span>(<span class="string">&quot;Input is empty&quot;</span>, <span class="ident">f</span>),
@@ -679,7 +689,7 @@
 
 	<span class="kw">fn</span> <span class="ident">find_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Match</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="self">self</span>.<span class="ident">name</span>()) {
-			<span class="prelude-val">Some</span>(<span class="ident">rmatch</span>)  =&gt; <span class="prelude-val">Ok</span>(<span class="ident">rmatch</span>),
+			<span class="prelude-val">Some</span>(<span class="ident">rmatch</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">rmatch</span>),
 			<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">err</span>(<span class="ident">SrcError::InvalidIdent</span>)),
 		}
 	}
@@ -804,18 +814,6 @@
 		<span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">inp</span>).<span class="ident">make_rules</span>()
 	}
 }
-
-<span class="comment">//fn find_line(inp: &amp;str, pos: usize) -&gt; usize {</span>
-<span class="comment">//	assert!(pos &lt;= inp.len());</span>
-<span class="comment">//	let mut count = 0;</span>
-<span class="comment">//	for (num, line) in inp.split(&#39;\n&#39;).enumerate() {</span>
-<span class="comment">//		count += line.len() + 1;</span>
-<span class="comment">//		if pos &lt;= count {</span>
-<span class="comment">//			return num;</span>
-<span class="comment">//		};</span>
-<span class="comment">//	};</span>
-<span class="comment">//	unreachable!();</span>
-<span class="comment">//}</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
