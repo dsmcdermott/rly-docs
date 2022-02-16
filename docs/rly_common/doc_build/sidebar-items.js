@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["build","A function for combining documentation and content from seperate files. Used internally by `lex` and `parse` as a part of their build process."]]});
