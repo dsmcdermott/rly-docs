@@ -693,7 +693,6 @@
 <span id="692">692</span>
 <span id="693">693</span>
 <span id="694">694</span>
-<span id="695">695</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains a struct and two macros to help with generating a parser as a part</span>
 <span class="comment">// of a cargo build script and including it in the crate in question.</span>
 
@@ -1000,7 +999,6 @@
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">force_load_file</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">IOError</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">set_default_values</span>();
-		<span class="self">self</span>.<span class="ident">set_rerun</span>().<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fin</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="self">self</span>.<span class="ident">location</span>().<span class="ident">unwrap</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">String::new</span>();
 		<span class="ident">fin</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">src</span>)<span class="question-mark">?</span>;

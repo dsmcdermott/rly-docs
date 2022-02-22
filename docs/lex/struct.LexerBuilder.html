@@ -19,7 +19,8 @@ filename for <code>location</code> minus the “<code>.lex</code>” extension. 
 name of the package with “<code>_lex</code>” added to the end.</p>
 <p>The value for <code>location</code> must be an existing file ending with “<code>.lex</code>”. If <code>location</code>
 is not set then it defaults to <code>name</code> with “<code>.lex</code>” added to the end (if <code>name</code> and
-<code>location</code> are not set, <code>name</code> default to the package name plus “<code>_lex</code>”, so <code>location would default to &quot;</code>[package name]_lex.lex`“.)</p>
+<code>location</code> are not set, <code>name</code> default to the package name plus “<code>_lex</code>”, so <code>location</code>
+would default to “<code>[package name]_lex.lex</code>”.)</p>
 <h2 id="environment" class="section-header"><a href="#environment">Environment</a></h2>
 <p><code>LexerBuilder</code>’s rely on a number of environment variables to be set in order to understand
 the package being built and where to write files. These should be automatically set
@@ -51,7 +52,7 @@ Returns <code>None</code> otherwise.</p>
 Returns <code>None</code> otherwise</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.with_name" class="method has-srclink"><div class="rightside"><a class="srclink" href="../src/lex/build_script.rs.html#137-143" title="goto source code">[src]</a></div><a href="#method.with_name" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.with_name" class="fnname">with_name</a>&lt;S:&nbsp;<a class="trait" href="https://doc.rust-lang.org/1.58.1/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.58.1/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>&gt;&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;name: S<br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.58.1/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.58.1/std/primitive.reference.html">&amp;mut </a>Self, <a class="enum" href="enum.LexerBuilderError.html" title="enum lex::LexerBuilderError">LexerBuilderError</a>&gt;</h4></div></summary><div class="docblock"><p>Attempts to set the name for <code>self</code> to <code>name</code>.</p>
 <p>If <code>name</code> is a valid filename (see <a href="struct.LexerBuilder.html#name-and-location">here</a>,) then
-this method returns a mutable reference to <code>self</code>, otherwise it returns an
+this method returns a mutable reference to <code>self</code>, otherwise it returns a
 <a href="enum.LexerBuilderError.html" title="LexerBuilderError"><code>LexerBuilderError</code></a>.</p>
 <h5 id="example-1" class="section-header"><a href="#example-1">Example</a></h5>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::ffi::OsStr</span>;
@@ -64,7 +65,7 @@ this method returns a mutable reference to <code>self</code>, otherwise it retur
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.at_location" class="method has-srclink"><div class="rightside"><a class="srclink" href="../src/lex/build_script.rs.html#166-172" title="goto source code">[src]</a></div><a href="#method.at_location" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.at_location" class="fnname">at_location</a>&lt;S:&nbsp;<a class="trait" href="https://doc.rust-lang.org/1.58.1/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.58.1/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>&gt;&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;location: S<br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.58.1/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.58.1/std/primitive.reference.html">&amp;mut </a>Self, <a class="enum" href="enum.LexerBuilderError.html" title="enum lex::LexerBuilderError">LexerBuilderError</a>&gt;</h4></div></summary><div class="docblock"><p>Attempts to set the location for <code>self</code> to <code>location</code>.</p>
 <p>If <code>location</code> is a valid path to a source file (see
 <a href="struct.LexerBuilder.html#name-and-location">here</a>,) then this method returns a mutable
-reference to <code>self</code>, otherwise it returns an <a href="enum.LexerBuilderError.html" title="LexerBuilderError"><code>LexerBuilderError</code></a>.</p>
+reference to <code>self</code>, otherwise it returns a <a href="enum.LexerBuilderError.html" title="LexerBuilderError"><code>LexerBuilderError</code></a>.</p>
 <h5 id="example-2" class="section-header"><a href="#example-2">Example</a></h5>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::path::Path</span>;
 <span class="kw">use</span> <span class="ident">lex::LexerBuilder</span>;

@@ -194,6 +194,34 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">rustdoc::invalid_rust_codeblocks</span>)]</span>
 <span class="attribute">#![<span class="ident">doc</span> <span class="op">=</span> <span class="macro">include_str!</span>(<span class="string">&quot;lexer_doc.md&quot;</span>)]</span>
 
@@ -244,50 +272,49 @@
 	<span class="kw">let</span> <span class="ident">reserved</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">&quot;^(crate)|(self)|(super)|(Self)$&quot;</span>).<span class="ident">unwrap</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lines</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 	<span class="kw">for</span> (<span class="ident">n</span>, <span class="ident">s</span>) <span class="kw">in</span> <span class="ident">src</span>.<span class="ident">lines</span>().<span class="ident">enumerate</span>() {
-		<span class="kw">if</span> <span class="ident">ignore</span>.<span class="ident">is_match</span>(<span class="ident">s</span>) {
-			<span class="kw">continue</span>;
-		};
-		<span class="comment">// TODO: make better error messages</span>
-		<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">LexerError::fmt</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>(<span class="ident">val</span>, <span class="ident">n</span>, <span class="ident">s</span>);
-		<span class="kw">let</span> <span class="ident">name_match</span> <span class="op">=</span> <span class="ident">name</span>
-			.<span class="ident">captures</span>(<span class="ident">s</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing or improperly formatted name for token rule&quot;</span>))<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">rule_name</span> <span class="op">=</span> <span class="ident">name_match</span>.<span class="ident">get</span>(<span class="number">1</span>).<span class="ident">unwrap</span>().<span class="ident">as_str</span>();
-		<span class="kw">if</span> <span class="ident">reserved</span>.<span class="ident">is_match</span>(<span class="ident">rule_name</span>) {
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>(<span class="string">&quot;invalid name used&quot;</span>));
-		};
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rest_of_line</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="ident">name_match</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">end</span>()..];
-		<span class="ident">rest_of_line</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">rest_of_line</span>[<span class="ident">div</span>
-			.<span class="ident">find</span>(<span class="ident">rest_of_line</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing divider \&quot;:\&quot; between name and regex&quot;</span>))<span class="question-mark">?</span>
-			.<span class="ident">end</span>()..];
-		<span class="kw">let</span> <span class="ident">regx_val</span> <span class="op">=</span> <span class="ident">regx</span>
-			.<span class="ident">captures</span>(<span class="ident">rest_of_line</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing or improperly delimited regex&quot;</span>))<span class="question-mark">?</span>
-			.<span class="ident">get</span>(<span class="number">1</span>)
-			.<span class="ident">unwrap</span>()
-			.<span class="ident">as_str</span>();
-		<span class="kw">match</span> <span class="ident">Regex::new</span>(<span class="ident">regx_val</span>) {
-			<span class="prelude-val">Ok</span>(<span class="ident">comp_regx</span>) =&gt; {
-				<span class="kw">if</span> <span class="ident">comp_regx</span>.<span class="ident">is_match</span>(<span class="string">&quot;&quot;</span>) {
-					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::empty</span>(<span class="ident">rule_name</span>, <span class="ident">regx_val</span>, <span class="ident">n</span>, <span class="ident">s</span>));
+		<span class="kw">if</span> <span class="op">!</span><span class="ident">ignore</span>.<span class="ident">is_match</span>(<span class="ident">s</span>) {
+			<span class="comment">// TODO: make better error messages</span>
+			<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">LexerError::fmt</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>(<span class="ident">val</span>, <span class="ident">n</span>, <span class="ident">s</span>);
+			<span class="kw">let</span> <span class="ident">name_match</span> <span class="op">=</span> <span class="ident">name</span>
+				.<span class="ident">captures</span>(<span class="ident">s</span>)
+				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing or improperly formatted name for token rule&quot;</span>))<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">rule_name</span> <span class="op">=</span> <span class="ident">name_match</span>.<span class="ident">get</span>(<span class="number">1</span>).<span class="ident">unwrap</span>().<span class="ident">as_str</span>();
+			<span class="kw">if</span> <span class="ident">reserved</span>.<span class="ident">is_match</span>(<span class="ident">rule_name</span>) {
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>(<span class="string">&quot;invalid name used&quot;</span>));
+			};
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rest_of_line</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="ident">name_match</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">end</span>()..];
+			<span class="ident">rest_of_line</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">rest_of_line</span>[<span class="ident">div</span>
+				.<span class="ident">find</span>(<span class="ident">rest_of_line</span>)
+				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing divider \&quot;:\&quot; between name and regex&quot;</span>))<span class="question-mark">?</span>
+				.<span class="ident">end</span>()..];
+			<span class="kw">let</span> <span class="ident">regx_val</span> <span class="op">=</span> <span class="ident">regx</span>
+				.<span class="ident">captures</span>(<span class="ident">rest_of_line</span>)
+				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">err</span>(<span class="string">&quot;missing or improperly delimited regex&quot;</span>))<span class="question-mark">?</span>
+				.<span class="ident">get</span>(<span class="number">1</span>)
+				.<span class="ident">unwrap</span>()
+				.<span class="ident">as_str</span>();
+			<span class="kw">match</span> <span class="ident">Regex::new</span>(<span class="ident">regx_val</span>) {
+				<span class="prelude-val">Ok</span>(<span class="ident">comp_regx</span>) =&gt; {
+					<span class="kw">if</span> <span class="ident">comp_regx</span>.<span class="ident">is_match</span>(<span class="string">&quot;&quot;</span>) {
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::empty</span>(<span class="ident">rule_name</span>, <span class="ident">regx_val</span>, <span class="ident">n</span>, <span class="ident">s</span>));
+					}
 				}
-			}
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::regex</span>(<span class="ident">e</span>, <span class="ident">n</span>, <span class="ident">s</span>));
-			}
-		};
-		<span class="kw">if</span> <span class="op">!</span><span class="ident">names</span>.<span class="ident">insert</span>(<span class="ident">rule_name</span>) {
-			<span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span> <span class="op">==</span> <span class="ident">rule_name</span>).<span class="ident">unwrap</span>().<span class="number">1</span> .<span class="number">1</span>;
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::duplicate_name</span>(
-				<span class="ident">rule_name</span>,
-				<span class="ident">prev</span>,
-				<span class="ident">lines</span>[<span class="ident">prev</span>],
-				<span class="ident">n</span>,
-				<span class="ident">s</span>,
-			));
-		};
-		<span class="ident">rules</span>.<span class="ident">push</span>((<span class="ident">rule_name</span>, (<span class="ident">regx_val</span>, <span class="ident">n</span>)));
+				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
+					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::regex</span>(<span class="ident">e</span>, <span class="ident">n</span>, <span class="ident">s</span>));
+				}
+			};
+			<span class="kw">if</span> <span class="op">!</span><span class="ident">names</span>.<span class="ident">insert</span>(<span class="ident">rule_name</span>) {
+				<span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span> <span class="op">==</span> <span class="ident">rule_name</span>).<span class="ident">unwrap</span>().<span class="number">1</span> .<span class="number">1</span>;
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexerError::duplicate_name</span>(
+					<span class="ident">rule_name</span>,
+					<span class="ident">prev</span>,
+					<span class="ident">lines</span>[<span class="ident">prev</span>],
+					<span class="ident">n</span>,
+					<span class="ident">s</span>,
+				));
+			};
+			<span class="ident">rules</span>.<span class="ident">push</span>((<span class="ident">rule_name</span>, (<span class="ident">regx_val</span>, <span class="ident">n</span>)));
+		}
 		<span class="ident">lines</span>.<span class="ident">push</span>(<span class="ident">s</span>);
 	}
 	<span class="prelude-val">Ok</span>(<span class="ident">rules</span>
@@ -337,9 +364,12 @@ name : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;
 comment : &quot;#.*&quot;&quot;##</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="attribute">#[<span class="ident">should_panic</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_scan_non_space_past_regex</span>() {
-		<span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_FAIL_REGFMT</span>)).<span class="ident">unwrap</span>();
+		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::error::LexerErrorKind</span>;
+		<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_FAIL_REGFMT</span>)).<span class="ident">unwrap_err</span>();
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">err</span>.<span class="ident">kind</span>(), <span class="ident">LexerErrorKind::Fmt</span>(<span class="kw">_</span>)));
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">lineno</span>(), <span class="number">3</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">line</span>(), <span class="string">r#&quot; 	 str : &quot;&quot;[^&quot;]*&quot;&quot; .a&quot;#</span>);
 	}
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC_INVALID_REGX</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">r##&quot;
@@ -351,9 +381,12 @@ name : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;
 comment : &quot;*#.*\]&quot;&quot;##</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="attribute">#[<span class="ident">should_panic</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_scan_invalid_regex</span>() {
-		<span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_INVALID_REGX</span>)).<span class="ident">unwrap</span>();
+		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::error::LexerErrorKind</span>;
+		<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_INVALID_REGX</span>)).<span class="ident">unwrap_err</span>();
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">err</span>.<span class="ident">kind</span>(), <span class="ident">LexerErrorKind::Regex</span>(<span class="kw">_</span>)));
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">lineno</span>(), <span class="number">6</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">line</span>(), <span class="string">r#&quot;comment : &quot;*#.*\]&quot;&quot;#</span>);
 	}
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC_DUPLICATE_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">r##&quot;
@@ -365,9 +398,21 @@ name : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;
 name : &quot;#.*&quot;&quot;##</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="attribute">#[<span class="ident">should_panic</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_scan_duplicate_names</span>() {
-		<span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_DUPLICATE_NAME</span>)).<span class="ident">unwrap</span>();
+		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::error::LexerErrorKind</span>;
+		<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_DUPLICATE_NAME</span>)).<span class="ident">unwrap_err</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">lineno</span>(), <span class="number">6</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">line</span>(), <span class="string">r##&quot;name : &quot;#.*&quot;&quot;##</span>);
+		<span class="kw">match</span> <span class="ident">err</span>.<span class="ident">kind</span>() {
+			<span class="ident">LexerErrorKind::DuplicateName</span> {
+				<span class="ident">name</span>,
+				<span class="ident">previous_lineno</span>: <span class="ident">lineno</span>,
+				<span class="ident">previous_line</span>: <span class="ident">line</span>,
+			} =&gt; {
+				<span class="macro">assert_eq!</span>((<span class="ident">name</span>.<span class="ident">as_str</span>(), <span class="kw-2">*</span><span class="ident">lineno</span>, <span class="ident">line</span>.<span class="ident">as_str</span>()), (<span class="string">&quot;name&quot;</span>, <span class="number">1</span>, <span class="string">r#&quot;name : &quot;[a-zA-Z_][0-9a-zA-Z_]*&quot;&quot;#</span>));
+			}
+			<span class="kw">_</span> =&gt; { <span class="macro">panic!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>.<span class="ident">kind</span>()); }
+		};
 	}
 
 	<span class="kw">const</span> <span class="ident">TEST_DOC_EMPTY_REGEX_MATCH</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">r##&quot;
@@ -380,9 +425,20 @@ comment : &quot;#.*&quot;
 &quot;##</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="attribute">#[<span class="ident">should_panic</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_scan_empty_regex_match</span>() {
-		<span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_EMPTY_REGEX_MATCH</span>)).<span class="ident">unwrap</span>();
+		<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::error::LexerErrorKind</span>;
+		<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">print_err</span>(<span class="ident">scan</span>(<span class="ident">TEST_DOC_EMPTY_REGEX_MATCH</span>)).<span class="ident">unwrap_err</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">lineno</span>(), <span class="number">1</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">err</span>.<span class="ident">line</span>(), <span class="string">r#&quot;name : &quot;a?|[a-zA-Z_][0-9a-zA-Z_]*&quot;&quot;#</span>);
+		<span class="kw">match</span> <span class="ident">err</span>.<span class="ident">kind</span>() {
+			<span class="ident">LexerErrorKind::EmptyRegexMatch</span> {
+				<span class="ident">name</span>,
+				<span class="ident">regex</span>,
+			} =&gt; {
+				<span class="macro">assert_eq!</span>((<span class="ident">name</span>.<span class="ident">as_str</span>(), <span class="ident">regex</span>.<span class="ident">as_str</span>()), (<span class="string">&quot;name&quot;</span>, <span class="string">r#&quot;a?|[a-zA-Z_][0-9a-zA-Z_]*&quot;#</span>));
+			}
+			<span class="kw">_</span> =&gt; { <span class="macro">panic!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>.<span class="ident">kind</span>()); }
+		};
 	}
 }
 

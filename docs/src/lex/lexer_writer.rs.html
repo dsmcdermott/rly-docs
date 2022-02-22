@@ -429,7 +429,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">token_rule</span> {
 	() =&gt; {
 		<span class="string">r#&quot;		pub const T_{name}: &amp;&#39;static str = r{edge}&quot;{value}&quot;{edge};
-		pub const T_ANCHOR_{name}: &amp;&#39;static str = r{edge}&quot;^{value}&quot;{edge};
+		pub const T_ANCHOR_{name}: &amp;&#39;static str = r{edge}&quot;^({value})&quot;{edge};
 &quot;#</span>
 	};
 }
