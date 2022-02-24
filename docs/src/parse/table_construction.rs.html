@@ -678,22 +678,6 @@
 <span id="677">677</span>
 <span id="678">678</span>
 <span id="679">679</span>
-<span id="680">680</span>
-<span id="681">681</span>
-<span id="682">682</span>
-<span id="683">683</span>
-<span id="684">684</span>
-<span id="685">685</span>
-<span id="686">686</span>
-<span id="687">687</span>
-<span id="688">688</span>
-<span id="689">689</span>
-<span id="690">690</span>
-<span id="691">691</span>
-<span id="692">692</span>
-<span id="693">693</span>
-<span id="694">694</span>
-<span id="695">695</span>
 </pre><pre class="rust"><code><span class="comment">// This module contains the TableBuilder struct, which is responsable for actually</span>
 <span class="comment">// building the LR1 parser tables. It also contains the Table datatype, representing an</span>
 <span class="comment">// LR1 table.</span>
@@ -1371,22 +1355,6 @@
 		];
 		<span class="macro">assert_eq!</span>(<span class="ident">closure</span>, <span class="ident">HashSet::from</span>(<span class="ident">test_items</span>));
 		<span class="macro">assert_eq!</span>(<span class="ident">kernel</span>, <span class="ident">HashSet::from</span>([<span class="ident">f</span>(<span class="number">0</span>, <span class="ident">EOF</span>)]));
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">test_build_tables</span>() {
-		<span class="kw">let</span> <span class="ident">rules</span> <span class="op">=</span> <span class="ident">alt_test_gr</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">rules</span>.<span class="ident">table_builder</span>();
-		<span class="ident">builder</span>.<span class="ident">build_tables</span>();
-		<span class="macro">assert!</span>(<span class="ident">builder</span>.<span class="ident">tables</span>.<span class="ident">is_empty</span>());
-		<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">builder</span>.<span class="ident">table_num</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tables</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">finished_tables</span>;
-		<span class="ident">tables</span>.<span class="ident">sort_unstable_by_key</span>(<span class="op">|</span><span class="ident">t</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">number</span>());
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mappings</span> <span class="op">=</span> <span class="ident">std::collections::HashMap::new</span>();
-		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">tables</span>.<span class="ident">len</span>() {
-			<span class="ident">mappings</span>.<span class="ident">insert</span>(<span class="ident">tables</span>[<span class="ident">i</span>].<span class="ident">number</span>, <span class="ident">i</span>);
-			<span class="ident">tables</span>[<span class="ident">i</span>].<span class="ident">number</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>);
-		}
 	}
 }
 </code></pre></div>
