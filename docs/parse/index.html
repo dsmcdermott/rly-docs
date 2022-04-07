@@ -1,17 +1,22 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate contains items for generating LR(1) parsers which can recognise and parse languages into concrete syntax trees (also called “parse trees”), which can then be transformed into abstract syntax trees for processing, such as with a compiler or interpreter."><meta name="keywords" content="rust, rustlang, rust-lang, parse"><title>parse - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
-    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../parse/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate parse</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all parse's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="parse" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">parse</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/parse/lib.rs.html#1-110" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains items for generating <a href="https://en.wikipedia.org/wiki/LR_parser">LR(1) parsers</a> which can recognise and parse
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate contains items for generating LR(1) parsers which can recognise and parse languages into concrete syntax trees (also called “parse trees”), which can then be transformed into abstract syntax trees for processing, such as with a compiler or interpreter."><meta name="keywords" content="rust, rustlang, rust-lang, parse"><title>parse - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../parse/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../parse/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate parse</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div></section><div id="sidebar-vars" data-name="parse" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../parse/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">parse</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/parse/lib.rs.html#1-110">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate contains items for generating <a href="https://en.wikipedia.org/wiki/LR_parser">LR(1) parsers</a> which can recognise and parse
 languages into <a href="https://en.wikipedia.org/wiki/Parse_tree">concrete syntax trees</a> (also called “parse trees”), which can then be
 transformed into <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax trees</a> for processing, such as with a compiler or
 interpreter.</p>
-<p>This is done by parsing a source <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> containing a specification of a grammar and and
+<p>This is done by parsing a source <a href="https://doc.rust-lang.org/1.60.0/std/primitive.str.html" title="str"><code>str</code></a> containing a specification of a grammar and and
 then generating a table of states for an LR(1) parser (as a finite state automaton) for
 that grammar. That table is then used to write out a module, in rust source code, for a
 parser struct capable of parsing the desired language.</p>
-<h2 id="generating-parsers" class="section-header"><a href="#generating-parsers">Generating Parsers</a></h2><h3 id="how-parsers-are-created" class="section-header"><a href="#how-parsers-are-created">How Parsers are Created</a></h3>
+<h2 id="generating-parsers"><a href="#generating-parsers">Generating Parsers</a></h2><h3 id="how-parsers-are-created"><a href="#how-parsers-are-created">How Parsers are Created</a></h3>
 <p>If you just want to use a parser in your project, and don’t care about the internals of
 how it’s generated, you can probably skip this section and just read the section on <a href="index.html#build-scripts">build
 scripts</a>.</p>
-<p>The general process for creating parsers starts with a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> containing a list of
+<p>The general process for creating parsers starts with a <a href="https://doc.rust-lang.org/1.60.0/std/primitive.str.html" title="str"><code>str</code></a> containing a list of
 grammar rules and parsing it into a <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> struct, which contains the abstract
 representation of those rules as well other data needed to understand them.</p>
 <p>A <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> struct is then used to create a <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> which contains a specification
@@ -39,7 +44,7 @@ a seperate stack from the built-in call stack.<sup id="fnref1"><a href="#fn1">1<
 generated and included for a parser, which makes it more difficult to document and
 abstract over different parsers. This is somewhat mitigated by the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>, which
 provides a common abstraction over the interfaces of the generated types.</p>
-<h3 id="discriminants" class="section-header"><a href="#discriminants">Discriminants</a></h3>
+<h3 id="discriminants"><a href="#discriminants">Discriminants</a></h3>
 <p>A note on discriminants: a “discriminant” type is the type used for the internal
 representations of symbols by a <a href="struct.Rules.html" title="Rules"><code>Rules</code></a> and <a href="struct.ParserSpec.html" title="ParserSpec"><code>ParserSpec</code></a> when generating a parser.
 Generally speaking, there are two different discriminant types to specify when building a
@@ -48,10 +53,10 @@ the left-hand side a <a href="https://en.wikipedia.org/wiki/Production_(computer
 discriminant type must implement <a href="trait.Prim.html" title="Prim"><code>Prim</code></a> as well as <a href="trait.Discriminant.html" title="Discriminant"><code>Discriminant</code></a>, and should be
 capable of avoiding collisions for the number of symbols that it’s required to
 differentiate.</p>
-<p>If you’re unsure what to use for a discriminant, <a href="https://doc.rust-lang.org/1.58.1/std/primitive.u32.html" title="u32"><code>u32</code></a> is a good default, and is also
+<p>If you’re unsure what to use for a discriminant, <a href="https://doc.rust-lang.org/1.60.0/std/primitive.u32.html" title="u32"><code>u32</code></a> is a good default, and is also
 used by the <a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a> macro as the default type for both terminal and non-terminal
 symbols.</p>
-<h3 id="build-scripts" class="section-header"><a href="#build-scripts">Build Scripts</a></h3>
+<h3 id="build-scripts"><a href="#build-scripts">Build Scripts</a></h3>
 <p>The process of generating a parser for a crate can be automated using cargo’s build-in
 <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">build script functionality</a>. This crate provides the <a href="struct.ParserBuilder.html" title="ParserBuilder"><code>ParserBuilder</code></a> struct and
 <a href="macro.build_parser.html" title="build_parser!"><code>build_parser!</code></a> macro to simplify this process. For example:</p>
@@ -92,7 +97,7 @@ contains a convenience macro called <a href="macro.parser.html" title="parser!">
 <span class="macro">parse::parser!</span>(<span class="string">&quot;my_parser&quot;</span>);
 
 <span class="kw">use</span> <span class="ident">parser::Parser</span>;</code></pre></div>
-<h2 id="parser-grammars" class="section-header"><a href="#parser-grammars">Parser Grammars</a></h2><h3 id="format" class="section-header"><a href="#format">Format</a></h3>
+<h2 id="parser-grammars"><a href="#parser-grammars">Parser Grammars</a></h2><h3 id="format"><a href="#format">Format</a></h3>
 <p>A grammar for a parser consists of a list of (non-empty) <a href="https://en.wikipedia.org/wiki/Production_(computer_science)">production rules</a> for a
 <a href="https://en.wikipedia.org/wiki/Context-free_grammar">context-free grammar</a>, represented by a utf-8 encoded string. A production rule takes
 the form:</p>
@@ -116,18 +121,18 @@ Fact-&gt;Term;</code></pre></div>
 <div class="example-wrap"><pre class="language-text"><code>	[[:alpha:]]([0-9_[:alpha:]])*</code></pre></div>
 <p>Which matches at least one ASCII alphabetical character, followed by any combination of
 digits <code>0</code> through <code>9</code>, underscores <code>_</code>, or ASCII alphabetical characters.</p>
-<h4 id="the-start-symbol" class="section-header"><a href="#the-start-symbol">The <code>Start</code> symbol</a></h4>
+<h4 id="the-start-symbol"><a href="#the-start-symbol">The <code>Start</code> symbol</a></h4>
 <p>The symbol <code>Start</code> is special: <code>Start</code> must occur exactly once, on the left-hand side of a
 production rule. That is, there must be one and only one production rule that takes
 <code>Start</code> as its input, and <code>Start</code> cannot appear on the right-hand side of any rules. When
 parsing, <code>Start</code> is taken to be the starting symbol to which the production rules are
 recursively applied.</p>
-<h4 id="reserved-symbols" class="section-header"><a href="#reserved-symbols">Reserved symbols</a></h4>
+<h4 id="reserved-symbols"><a href="#reserved-symbols">Reserved symbols</a></h4>
 <p>The same names disallowed by rust for <a href="https://doc.rust-lang.org/reference/identifiers.html">use in raw identifiers</a>, namely <code>crate</code>,
 <code>self</code>, <code>super</code>, and <code>Self</code>, also cannot be used in parser specifications. This is due to
 how the symbols are implemented <a href="index.html#parser-stucture">in the generated parsers</a>, which relies on using raw
 identifiers.</p>
-<h3 id="semantics" class="section-header"><a href="#semantics">Semantics</a></h3>
+<h3 id="semantics"><a href="#semantics">Semantics</a></h3>
 <p>The grammar rules define the structure of the syntax trees used by the parser and how the
 parser attempts to parse the input.</p>
 <p>The grammar, or production rules can be seen as a kind of <a href="https://en.wikipedia.org/wiki/Recursive_ascent_parser">rewrite rule</a>, where the
@@ -142,7 +147,7 @@ produced.</p>
 using the production rule to reduce sequences of symbols into non-terminal symbols. As it
 does this, it builds trees out of the reduced symbols, label each non-leaf node by the
 left-hand side of the production rule that was used to make it.</p>
-<h4 id="grammar-example" class="section-header"><a href="#grammar-example">Grammar Example</a></h4>
+<h4 id="grammar-example"><a href="#grammar-example">Grammar Example</a></h4>
 <p>Suppose you have the following grammar:</p>
 <div class="example-wrap"><pre class="language-text"><code>Start -&gt; Sum;
 Sum -&gt; Fact;
@@ -180,7 +185,7 @@ Fact     │      Fact     │       │       │       │
  │       │       │       │       │       │       │
 int     plus    int     mult    int     plus    int
 
- 5       +       4       *       3       +       2</code></pre></div><h4 id="terminal-and-nonterminal-symbols" class="section-header"><a href="#terminal-and-nonterminal-symbols">Terminal and NonTerminal Symbols</a></h4>
+ 5       +       4       *       3       +       2</code></pre></div><h4 id="terminal-and-nonterminal-symbols"><a href="#terminal-and-nonterminal-symbols">Terminal and NonTerminal Symbols</a></h4>
 <p>Throughout this documentation, you may see refrences to “terminal” and “non-terminal”
 symbols. A terminal symbol is a symbol in a <a href="index.html#format">grammar specification</a> that
 does not appear on the left-hand side of a production rule, and is therefore “terminal” in
@@ -196,7 +201,7 @@ second <code>plus</code>.</p>
 <p>Non-terminal symbols, on the other hand, correspond to higher-order phrases, represented
 as branch nodes in the syntax tree grouping together their constituent elements. In the
 above example, the non-terminals are <code>Fact</code>, for multiplication</p>
-<h2 id="using-parsers" class="section-header"><a href="#using-parsers">Using Parsers</a></h2><h3 id="parser-structure" class="section-header"><a href="#parser-structure">Parser Structure</a></h3>
+<h2 id="using-parsers"><a href="#using-parsers">Using Parsers</a></h2><h3 id="parser-structure"><a href="#parser-structure">Parser Structure</a></h3>
 <p>A parser is writen as a module in rust source code, containing the items used to parse an
 input. This module assumes only that this crate (<code>parse</code>) is available as an external
 crate and that there is a sister module <code>lexer</code> that contains an enum <code>TokenKind</code>,
@@ -210,8 +215,8 @@ representing the different possible <a href="index.html#terminal-and-non-termina
 <li>
 <p>An enum <code>NonTerm</code> which represents the <a href="index.html#terminal-and-non-terminal-symbols">non-terminal symbols</a> of the grammar. The
 variants of <code>NonTerm</code> are <code>&lt;sym&gt;</code> for each non-terminal <a href="index.html#format">symbol</a> <code>&lt;sym&gt;</code> of
-the language<sup id="fnref3"><a href="#fn3">3</a></sup>. <code>NonTerm</code> implements <a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Display.html"><code>Display</code></a>,
-<a href="https://doc.rust-lang.org/1.58.1/core/fmt/trait.Debug.html"><code>Debug</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a>, <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>, and <a href="https://doc.rust-lang.org/1.58.1/core/hash/macros/derive.Hash.html" title="Hash"><code>Hash</code></a>.</p>
+the language<sup id="fnref3"><a href="#fn3">3</a></sup>. <code>NonTerm</code> implements <a href="https://doc.rust-lang.org/1.60.0/core/fmt/trait.Display.html"><code>Display</code></a>,
+<a href="https://doc.rust-lang.org/1.60.0/core/fmt/trait.Debug.html"><code>Debug</code></a>, <a href="https://doc.rust-lang.org/1.60.0/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a>, <a href="https://doc.rust-lang.org/1.60.0/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>, and <a href="https://doc.rust-lang.org/1.60.0/core/hash/macros/derive.Hash.html" title="Hash"><code>Hash</code></a>.</p>
 </li>
 </ul>
 <ul>
@@ -232,7 +237,7 @@ parsers responsable for parsing an input stream into a syntax tree.</p>
 <a href="trait.Parser.html#tymethod.parse" title="Parser::parse()"><code>Parser::parse()</code></a>.</p>
 </li>
 </ul>
-<h4 id="a-note-about-traits" class="section-header"><a href="#a-note-about-traits">A Note About Traits</a></h4>
+<h4 id="a-note-about-traits"><a href="#a-note-about-traits">A Note About Traits</a></h4>
 <p>The public interface of <code>Parser</code> is completely described by the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>. This
 allows you to access documentation on the generated parser types by looking at the
 documentation for the associated trait as well as write more generic code.</p>
@@ -242,18 +247,18 @@ means that actually importing <a href="trait.Parser.html" title="Parser"><code>P
 for each method <code>foo</code> on the trait <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>, the generated type <code>Parser</code> will also
 implement <code>foo</code>, with <code>Parser::foo</code> and <code>&lt;Parser as parse::Parser&gt;::foo</code> guaranteed to be
 equivalent.</p>
-<h3 id="interfacing-with-lexers" class="section-header"><a href="#interfacing-with-lexers">Interfacing with Lexers</a></h3>
-<p>Generally, a <a href="index.html#parser-stucture"><code>Parser</code></a> is incapable of directly parsing a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>; it needs a
-<a href="https://en.wikipedia.org/wiki/Lexer">lexer</a> to “lex” or “tokenize” a string into <a href="lex/struct.Token.html"><code>Token</code></a>’s, which contain a sub-<a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a>
+<h3 id="interfacing-with-lexers"><a href="#interfacing-with-lexers">Interfacing with Lexers</a></h3>
+<p>Generally, a <a href="index.html#parser-stucture"><code>Parser</code></a> is incapable of directly parsing a <a href="https://doc.rust-lang.org/1.60.0/std/primitive.str.html" title="str"><code>str</code></a>; it needs a
+<a href="https://en.wikipedia.org/wiki/Lexer">lexer</a> to “lex” or “tokenize” a string into <a href="lex/struct.Token.html"><code>Token</code></a>’s, which contain a sub-<a href="https://doc.rust-lang.org/1.60.0/std/primitive.str.html" title="str"><code>str</code></a>
 of the source text as well as a <a href="index.html#terminal-and-non-terminal-symbols">terminal symbol</a> indicating how the token should be
 interpreted.</p>
 <p>Parsers (both the <a href="index.html#parser-stucture">generated type</a> and anything else that implements the <a href="trait.Parser.html" title="Parser"><code>Parser</code></a>
 trait) are designed to work with the lexing framework outlined and implemented in this
 crate’s sister package <a href="../lex/index.html"><code>lex</code></a>.</p>
-<p>To give a brief overview<sup id="fnref4"><a href="#fn4">4</a></sup>: A <a href="../lex/lexers/trait.Lexer.html"><code>Lexer</code></a> takes an input <a href="https://doc.rust-lang.org/1.58.1/std/primitive.str.html" title="str"><code>str</code></a> and
+<p>To give a brief overview<sup id="fnref4"><a href="#fn4">4</a></sup>: A <a href="../lex/lexers/trait.Lexer.html"><code>Lexer</code></a> takes an input <a href="https://doc.rust-lang.org/1.60.0/std/primitive.str.html" title="str"><code>str</code></a> and
 returns a <a href="lex/trait.Tokens.html"><code>Tokens</code></a>, which is an iterator over the (lazily lexed) tokens of the input.
 The <a href="trait.Parser.html" title="Parser"><code>Parser</code></a> trait takes a <a href="lex/trait.Tokens.html"><code>Tokens</code></a> and uses it as the input stream for parsing.</p>
-<h4 id="tokenkind-and-non-terminal-symbols" class="section-header"><a href="#tokenkind-and-non-terminal-symbols">TokenKind and Non-Terminal Symbols</a></h4>
+<h4 id="tokenkind-and-non-terminal-symbols"><a href="#tokenkind-and-non-terminal-symbols">TokenKind and Non-Terminal Symbols</a></h4>
 <p>As explained <a href="index.html#terminal-and-non-terminal-symbols">above</a>, a grammar contains terminal symbols for tokens, and
 non-terminal symbols for higher phrases. To distinguish the non-terminal symbols, each
 parser module contains an enumeration <a href="index.html#parser-stucture"><code>NonTerm</code></a>, but to distinguish the terminal
@@ -270,7 +275,7 @@ should use the macro <a href="../lex/macro.lexer.html"><code>lexer!</code></a> a
 the same module so that the parser can use the <code>TokenKind</code> defined in the lexer module.</p>
 <p>Also, if your using <code>lex</code>, make sure that the names of your lexer rules and your terminal
 symbols are the same!</p>
-<h3 id="asts" class="section-header"><a href="#asts"><code>Ast</code>’s</a></h3>
+<h3 id="asts"><a href="#asts"><code>Ast</code>’s</a></h3>
 <p>When a parser has successfully parsed its input, with <a href="trait.Parser.html#tymethod.parse"><code>parse()</code></a>, it
 returns an <a href="index.html#parser-stucture"><code>Ast</code></a>, which represents the <a href="https://en.wikipedia.org/wiki/Parse_tree">syntax tree</a> derived by the
 parser<sup id="fnref5"><a href="#fn5">5</a></sup>.</p>
@@ -278,7 +283,7 @@ parser<sup id="fnref5"><a href="#fn5">5</a></sup>.</p>
 see the documentation on the <a href="ast/struct.Ast.html"><code>Ast</code></a> trait and the module <a href="ast/index.html" title="ast"><code>ast</code></a>. For some more
 information on how they relate to the grammar of a language and how they’re built, see the
 <a href="index.html#grammar-example">above example</a>.</p>
-<h2 id="example" class="section-header"><a href="#example">Example</a></h2>
+<h2 id="example"><a href="#example">Example</a></h2>
 <p>This example uses the crate <code>lex</code> to build the lexer <a href="index.html#interfacing-with-lexers">used when parsing</a>. For more
 information on lexers and how the <code>lex</code> crate works, you may wish to consult the
 documentation there.</p>
@@ -411,7 +416,7 @@ called on leaf nodes (<a href="ast/trait.Walker.html#tymethod.on_leaf"><code>on_
 exiting a branch node (<a href="ast/trait.Walker.html#tymethod.exit"><code>exit</code></a>.)</p>
 <p>We do this by, essentially, creating a struct that keeps track of all the previously
 calculated values of the current branch node and all ancestral branch nodes. When it
-encounters a leaf node, if that node is an <code>int</code> it parses the value as a <a href="https://doc.rust-lang.org/1.58.1/std/primitive.u32.html" title="u32"><code>u32</code></a> and
+encounters a leaf node, if that node is an <code>int</code> it parses the value as a <a href="https://doc.rust-lang.org/1.60.0/std/primitive.u32.html" title="u32"><code>u32</code></a> and
 records it. When it leaves a branch node, it takes all the recorded values of the child
 nodes of that branch node and combines them as appropriate (either adding them for a <code>Sum</code>
 node or multiplying them for a <code>Fact</code> node) and records the result as the value for that
@@ -569,7 +574,9 @@ parsers</a>.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.build_parser_with.html" title="parse::build_parser_with macro">build_parser_with</a></div><div class="item-right docblock-short"><p>A macro allowing for building parsers with with specific discriminants.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.parser.html" title="parse::parser macro">parser</a></div><div class="item-right docblock-short"><p>A macro for including a parser generated by a <a href="struct.ParserBuilder.html" title="ParserBuilder"><code>ParserBuilder</code></a> in a project.</p>
 </div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
-<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.BuilderError.html" title="parse::BuilderError struct">BuilderError</a></div><div class="item-right docblock-short"><p>A re-export of <a href="struct.BuilderError.html"><code>rly_common::builders::Error</code></a>.</p>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.BuilderError.html" title="parse::BuilderError struct">BuilderError</a></div><div class="item-right docblock-short"><p>A re-export of <a href="struct.BuilderError.html"><code>rly_common::builders::Error</code></a>.
+The type of errors returned by <a href="../rly_common/builders/struct.BuilderBase.html"><code>Builders</code></a> including
+LexerBuilder and ParserBuilder.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ParserBuilder.html" title="parse::ParserBuilder struct">ParserBuilder</a></div><div class="item-right docblock-short"><p>A helper struct for creating parsers using build scripts</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ParserSpec.html" title="parse::ParserSpec struct">ParserSpec</a></div><div class="item-right docblock-short"><p>A struct representing a compiled collection of LR(1) parser tables.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Rules.html" title="parse::Rules struct">Rules</a></div><div class="item-right docblock-short"><p>A struct representing a parsed collection of grammar or production rules.</p>
@@ -583,8 +590,9 @@ writing parsers.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.SyntaxErrorKind.html" title="parse::SyntaxErrorKind enum">SyntaxErrorKind</a></div><div class="item-right docblock-short"><p>An enum for the kinds of <a href="struct.SyntaxError.html" title="SyntaxError"><code>SyntaxError</code></a>’s.</p>
 </div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Discriminant.html" title="parse::Discriminant trait">Discriminant</a></div><div class="item-right docblock-short"><p>A trait for <a href="index.html#discriminants">discriminant types</a>.</p>
-</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Parser.html" title="parse::Parser trait">Parser</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Prim.html" title="parse::Prim trait">Prim</a></div><div class="item-right docblock-short"><p>An alias for <a href="https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/hash/trait.Hash.html" title="Hash"><code>Hash</code></a> + <a href="https://doc.rust-lang.org/1.58.1/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Parser.html" title="parse::Parser trait">Parser</a></div><div class="item-right docblock-short"><p>A trait providing a generic interface for <a href="index.html#using-parsers">Parsers</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Prim.html" title="parse::Prim trait">Prim</a></div><div class="item-right docblock-short"><p>An alias for <a href="https://doc.rust-lang.org/1.60.0/core/marker/trait.Copy.html" title="Copy"><code>Copy</code></a> + <a href="https://doc.rust-lang.org/1.60.0/core/hash/trait.Hash.html" title="Hash"><code>Hash</code></a> + <a href="https://doc.rust-lang.org/1.60.0/core/cmp/trait.Ord.html" title="Ord"><code>Ord</code></a>.</p>
 </div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.write_from_src.html" title="parse::write_from_src fn">write_from_src</a></div><div class="item-right docblock-short"><p>Parses the grammar specification in <code>src</code> and writes a parser module to <code>fout</code>.</p>
-</div></div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="parse" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
+</div></div></div></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="parse" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>
